@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import { MONGODB_URI, PORT } from './constants';
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.set('port', PORT);
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+app.use(errorHandler);
 
 app.get('/', (_, res) => {
   res.send('Hello World!');
