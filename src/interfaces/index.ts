@@ -1,11 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export * from './content';
 export * from './result';
 export * from './login';
 
 export interface IBase extends Document {
-  _id?: string;
   contentId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   createdAt: number;

@@ -4,6 +4,7 @@ import cors from 'cors';
 import { MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares/errorHandler';
 import contents from './routes/contents';
+import results from './routes/results';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 app.use('/api/v1/contents', contents);
+app.use('/api/v1/results', results);
 
 app.use(errorHandler);
 
