@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares/errorHandler';
+import contents from './routes/contents';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.set('port', PORT);
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+app.use('/api/v1/contents', contents);
 
 app.use(errorHandler);
 
