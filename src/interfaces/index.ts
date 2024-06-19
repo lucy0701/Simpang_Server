@@ -5,6 +5,7 @@ export * from './result';
 export * from './login';
 
 export interface IBase extends Document {
+  _id?: string;
   contentId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   createdAt: number;

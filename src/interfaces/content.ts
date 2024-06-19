@@ -2,6 +2,7 @@ import { ContentType } from '../types';
 import mongoose, { Document } from 'mongoose';
 
 export interface IContent extends Document {
+  _id?: string;
   title: string;
   content: string;
   imageUrl: string;
