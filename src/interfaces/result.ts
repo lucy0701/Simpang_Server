@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IResult extends Document {
-  _id?: string;
   contentId: mongoose.Types.ObjectId;
   result: string;
   title: string;
