@@ -4,12 +4,11 @@ import { IUser } from '../interfaces/user';
 
 const UserSchema = new Schema<IUser>({
   kakaoId: {
-    type: String,
+    type: Number,
     required: true,
     unique: true,
   },
   name: { type: String, required: true },
-  password: { type: String, required: true },
   thumbnail: { type: String, required: true },
   createdAt: {
     type: Number,
