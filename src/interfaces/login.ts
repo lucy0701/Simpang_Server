@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface ILogin extends Document {
-  _id?: string;
   userId: mongoose.Types.ObjectId;
   loginTime: number;
 }

@@ -1,9 +1,11 @@
+import { Document } from 'mongoose';
+
 export interface IUser extends Document {
-  _id?: string;
-  kakaoId: string;
+  kakaoId: number;
   name: string;
-  password: string;
   thumbnail: string;
   role: 'User' | 'Admin';
   createdAt: number;
 }
+
+export type UserInfo = Pick<IUser, 'name' | 'thumbnail' | 'createdAt'>;
