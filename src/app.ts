@@ -1,12 +1,19 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import { MONGODB_URI, PORT } from './constants';
+import { FE_URL, MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares/errorHandler';
 import contents from './routes/contents';
 import results from './routes/results';
+import kakaoLogin from './routes/kakaoLogin';
 
 const app = express();
+
+const corsOptions = {
+  origin: FE_URL,
+  exposedHeaders: ['Authorization'],
+  allowedHeaders: ['Authorization', 'Content-Type'],
+};
 
 mongoose
   .connect(MONGODB_URI)
@@ -15,11 +22,12 @@ mongoose
 
 app.set('port', PORT);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
+app.use('/api/oauth2/kakao', kakaoLogin);
 
 app.use(errorHandler);
 
