@@ -1,8 +1,8 @@
-import mongoose, { Document } from 'mongoose';
-
 export * from './content';
 export * from './result';
 export * from './login';
+
+import mongoose, { Document } from 'mongoose';
 
 export interface IBase extends Document {
   contentId: mongoose.Types.ObjectId;

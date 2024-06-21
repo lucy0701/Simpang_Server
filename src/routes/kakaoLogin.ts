@@ -5,7 +5,7 @@ import UserModel from '../schemas/User';
 import LoginModel from '../schemas/Login';
 import jwt from 'jsonwebtoken';
 import { IUser } from '../interfaces/user';
-import { AuthToken, Payload, userInfoResponse } from '../types/login';
+import { AuthToken, Payload, UserInfoResponse } from '../types/auth';
 
 const router = express.Router();
 
@@ -34,7 +34,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
 
     const accessToken = authToken.data.access_token;
 
-    const userInfoResponse = await axios.post<userInfoResponse>(
+    const userInfoResponse = await axios.post<UserInfoResponse>(
       'https://kapi.kakao.com/v2/user/me',
       {},
       {
@@ -47,7 +47,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
 
     const userInfoData = userInfoResponse.data;
 
-    let user = await UserModel.findOne<IUser>({ kakaoId: userInfoData });
+    let user = await UserModel.findOne<IUser>({ kakaoId: userInfoData.id });
 
     if (user) {
       user.name = userInfoData.kakao_account.profile.nickname;
@@ -72,7 +72,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
     };
 
     const payload: Payload = {
-      userId: user._id,
+      userId: user.kakaoId,
       role: user.role,
     };
 

@@ -6,7 +6,7 @@ export type AuthToken = {
   refresh_token_expires_in: string; // 리프레시 토큰 만료 시간(초)
 };
 
-export type userInfoResponse = {
+export type UserInfoResponse = {
   id: number;
   connected_at: Date;
   kakao_account: {
@@ -18,6 +18,6 @@ export type userInfoResponse = {
 };
 
 export type Payload = {
-  userId: string | unknown;
+  userId: number;
   role: string;
 };
