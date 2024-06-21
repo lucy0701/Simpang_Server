@@ -24,7 +24,6 @@ app.set('port', PORT);
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
 app.use('/api/oauth2/kakao', kakaoLogin);
