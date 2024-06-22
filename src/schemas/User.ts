@@ -18,7 +18,7 @@ const UserSchema = new Schema<IUser>({
   role: {
     type: String,
     required: true,
-    enum: ['User', 'Admin'],
+    enum: ['User', 'Admin', 'Creator'],
     default: 'User',
   },
 });
