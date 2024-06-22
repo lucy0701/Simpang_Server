@@ -17,7 +17,4 @@ export type UserInfoResponse = {
   };
 };
 
-export type Payload = {
-  userId: number;
-  role: string;
-};
+export type Role = 'User' | 'Admin' | 'Creator';
