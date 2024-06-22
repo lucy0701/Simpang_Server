@@ -1,39 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { SECRET_KEY } from '../constants';
-import { IUser } from '../interfaces/user';
-import UserModel from '../schemas/User';
+import jwt from 'jsonwebtoken';
+import JwtService from '../utils/jwtService';
+import { Role } from '../types';
 
-const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+export const tokenChecker = (req: Request, _res: Response, next: NextFunction) => {
+  const user = JwtService.getUserRequest(req);
+  req.user = user;
+  next();
+};
 
+export const loginChecker = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!authHeader) {
-      return res.status(401).send({ message: '엑세스 토큰을 입력해 주세요.' });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).send({ message: '엑세스 토큰을 입력해 주세요.' });
-    }
-
-    const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
-
-    const userId = decoded.userId;
-
-    if (!userId) {
-      return res.status(403).send({ message: '유효하지 않은 토큰입니다.' });
-    }
-
-    const user = await UserModel.findOne<IUser>({ kakaoId: userId }).exec();
+    const user = JwtService.getUserRequest(req);
 
     if (!user) {
-      return res.status(404).send({ message: '유저를 찾을 수 없습니다.' });
+      return res.status(401).send({ message: '엑세스 토큰을 입력해 주세요.' });
     }
 
     req.user = user;
-
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
@@ -41,10 +25,18 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
     } else if (error instanceof jwt.JsonWebTokenError) {
       return res.status(403).send({ message: '유효하지 않은 토큰입니다.' });
     }
-
-    console.error('JWT verification error:', error);
-    return res.status(500).send({ message: '서버 오류입니다.' });
+    next(error);
   }
 };
 
-export default authMiddleware;
+export const roleChecker = (roles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+
+    if (!user || !roles.includes(user.role)) {
+      return res.status(403).json({ message: '접근 권한이 없습니다.' });
+    }
+
+    next();
+  };
+};

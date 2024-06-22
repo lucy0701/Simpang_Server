@@ -3,9 +3,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import { FE_URL, REST_API_KEY, SECRET_KEY } from '../constants';
 import UserModel from '../schemas/User';
 import LoginModel from '../schemas/Login';
-import jwt from 'jsonwebtoken';
-import { IUser } from '../interfaces/user';
-import { AuthToken, Payload, UserInfoResponse } from '../types/auth';
+import { IUser } from '../interfaces';
+import { AuthToken, UserInfoResponse } from '../types/auth';
+import JwtService from '../utils/jwtService';
 
 const router = express.Router();
 
@@ -17,7 +17,6 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
       return res.status(400).json({ message: 'Authorization code is missing.' });
     }
 
-    // TODO : 리프레시 토큰 활용
     const authToken = await axios.post<AuthToken>(
       'https://kauth.kakao.com/oauth/token',
       {},
@@ -71,12 +70,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
       createdAt: user.createdAt,
     };
 
-    const payload: Payload = {
-      userId: user.kakaoId,
-      role: user.role,
-    };
-
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+    const token = JwtService.createJWT(user);
 
     res.setHeader('Authorization', `Bearer ${token}`);
     res.status(200).json(userInfo);
