@@ -2,16 +2,12 @@ import express, { NextFunction, Request, Response } from 'express';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
 import UserResultModel from '../schemas/UserResult';
-import { IContent, IResult, IUserResult } from '../interfaces';
+import { IContent, IResult } from '../interfaces';
+import { tokenChecker } from '../middlewares/auth';
 
 const router = express.Router();
 
 type Score = [number, number, number, number];
-
-interface ReqBody {
-  userId?: string;
-  score: Score;
-}
 
 const calculateResult = (score: Score) => {
   const resultMapping = ['E', 'I', 'N', 'S', 'T', 'F', 'J', 'P'];
@@ -25,11 +21,12 @@ const calculateResult = (score: Score) => {
 
 router.post(
   '/:contentId',
-  async (req: Request<{ contentId: string }, {}, ReqBody>, res: Response, next: NextFunction) => {
+  tokenChecker,
+  async (req: Request<{ contentId: string }, {}, { score: Score }>, res: Response, next: NextFunction) => {
     try {
       const { contentId } = req.params;
-      // TODO : userId 처리 방법 변경
-      const { userId, score } = req.body;
+      const { score } = req.body;
+      const user = req.user;
 
       if (!contentId || !score) {
         return res.status(400).json({ message: 'Missing required fields: score or contentId' });
@@ -55,12 +52,19 @@ router.post(
         return res.status(404).json({ message: 'Result not found' });
       }
 
-      // TODO : userId 처리 방법 변경
-      if (userId) {
+      if (user) {
+        const findResult = await ResultModel.find({ userId: user.sub }).countDocuments();
+        if (findResult >= 50) {
+          const oldestResult = await ResultModel.findOne({ userId: user.sub }).sort({ createdAt: 1 }).exec();
+
+          if (oldestResult) {
+            await ResultModel.findByIdAndDelete(oldestResult._id).exec();
+          }
+        }
         await UserResultModel.create({
           contentId: content._id,
           resultId: resultData._id,
-          userId: userId,
+          userId: user._id,
         });
       }
 
