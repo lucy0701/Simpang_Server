@@ -24,11 +24,11 @@ app.set('port', PORT);
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(errorHandler);
+
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
 app.use('/api/oauth2/kakao', kakaoLogin);
-
-app.use(errorHandler);
 
 app.get('/', (_, res) => {
   res.send('Hello World!');
