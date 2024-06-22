@@ -1,5 +1,5 @@
 import { ContentType } from '../types';
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Date, Document } from 'mongoose';
 
 export interface IContent extends Document {
   title: string;
@@ -17,6 +17,8 @@ export interface IContent extends Document {
   playCount: number;
   commentCount: number;
   likeCount: number;
-  createdAt: number;
+  createdAt: Date;
+  updatedAt: Date;
   type: ContentType;
+  creator: mongoose.Types.ObjectId;
 }
