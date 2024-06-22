@@ -1,10 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
+import { loginChecker, roleChecker } from '../middlewares/auth';
 import { IContent, IResult } from '../interfaces';
 import { uploadToImageBB } from '../services';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
-import { loginChecker, roleChecker } from '../middlewares/auth';
+import UserResultModel from '../schemas/UserResult';
+import ShareModel from '../schemas/Share';
+import LikeModel from '../schemas/Like';
+
 
 interface QueryParams {
   size: string;
@@ -20,12 +24,12 @@ router.post(
   loginChecker,
   roleChecker(['Creator', 'Admin']),
   upload.fields([{ name: 'imageUrls' }]),
-  async (req: Request<{}, IContent>, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user;
 
       if (req.body.type === 'MBTI') {
-        if (req.body.questuions.length !== 12 || req.body.results.length) {
+        if (req.body.questions.length !== 12 || req.body.results.length) {
           return res.status(400).json({
             message: 'For MBTI type, there must be exacthly 12 questions and 16 results.',
           });
@@ -140,12 +144,12 @@ router.patch(
   roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }, {}, Partial<IContent>>, res: Response, next: NextFunction) => {
     try {
-      const { contentId } = req.query;
+      const { contentId } = req.params;
       const updateData = req.body;
       const user = req.user;
 
       if (user?.role === 'Creator') {
-        const creator = await ContentModel.findOne({ creator: user?.sub });
+        const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
         if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
       }
 
@@ -171,15 +175,23 @@ router.delete(
   roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
     try {
-      const { contentId } = req.query;
+      const { contentId } = req.params;
       const user = req.user;
 
       if (user?.role === 'Creator') {
-        const creator = await ContentModel.findOne({ creator: user?.sub });
-        if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
+        if (!creator) {
+          return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        }
       }
+      await Promise.all([
+        UserResultModel.deleteMany({ contentId }),
+        ShareModel.deleteMany({ contentId }),
+        LikeModel.deleteMany({ contentId }),
+        ResultModel.deleteMany({ contentId }),
+      ]);
 
-      const deleteContent = await ContentModel.findByIdAndDelete(contentId);
+      const deleteContent = await ContentModel.findByIdAndDelete(contentId).exec();
 
       if (!deleteContent) {
         return res.status(404).json({ message: 'Content not found' });

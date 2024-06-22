@@ -20,5 +20,5 @@ export interface IContent extends Document {
   createdAt: Date;
   updatedAt: Date;
   type: ContentType;
-  creator?: mongoose.Types.ObjectId;
+  creator: mongoose.Types.ObjectId;
 }
