@@ -1,13 +1,15 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { IContent, IResult } from '../interfaces';
-import { uploadToImageBB } from '../utils/upload';
+import { uploadToImageBB } from '../services';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
+import { loginChecker, roleChecker } from '../middlewares/auth';
 
 interface QueryParams {
   size: string;
   page: string;
+  sort?: 'asc' | 'desc';
 }
 
 const router = express.Router();
@@ -15,9 +17,13 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   '/',
+  loginChecker,
+  roleChecker(['Creator', 'Admin']),
   upload.fields([{ name: 'imageUrls' }]),
   async (req: Request<{}, IContent>, res: Response, next: NextFunction) => {
     try {
+      const user = req.user;
+
       if (req.body.type === 'MBTI') {
         if (req.body.questuions.length !== 12 || req.body.results.length) {
           return res.status(400).json({
@@ -36,6 +42,7 @@ router.post(
       const newContent = await new ContentModel<IContent>({
         imageUrl: imageUrls[0],
         questions: JSON.parse(questions),
+        creator: user?._id,
         ...contentData,
       }).save();
 
@@ -61,10 +68,9 @@ router.post(
   },
 );
 
-// TODO : 오름차순, 내림차순 필터
 router.get('/', async (req: Request<{}, {}, {}, QueryParams>, res: Response, next: NextFunction) => {
   try {
-    const { size, page } = req.query;
+    const { size, page, sort } = req.query;
 
     const sizeNum = Number(size);
     const pageNum = Number(page);
@@ -77,10 +83,15 @@ router.get('/', async (req: Request<{}, {}, {}, QueryParams>, res: Response, nex
 
     const totalCount = await ContentModel.countDocuments();
     const totalPage = Math.ceil(totalCount / sizeNum);
+    const contentSort = ContentModel.find();
 
-    const contents: IContent[] = await ContentModel.find()
+    if (sort === 'asc') contentSort.sort({ createdAt: 1 });
+    else contentSort.sort({ createAt: -1 });
+
+    const contents: IContent[] = await contentSort
       .skip((pageNum - 1) * sizeNum)
-      .limit(sizeNum);
+      .limit(sizeNum)
+      .exec();
 
     const filteredContent: Partial<IContent>[] = contents.map((content) => {
       const { questions, results, __v, ...filteredContent } = content.toObject();
@@ -111,11 +122,11 @@ router.get('/random', async (_, res: Response, next: NextFunction) => {
   }
 });
 
-router.get(':/contentId', async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
   try {
     const { contentId } = req.params;
 
-    const content = await ContentModel.findById(contentId);
+    const content = await ContentModel.findById(contentId).exec();
 
     res.status(200).json(content);
   } catch (error) {
@@ -124,15 +135,24 @@ router.get(':/contentId', async (req: Request<{ contentId: string }>, res: Respo
 });
 
 router.patch(
-  ':/contentId',
+  '/:contentId',
+  loginChecker,
+  roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }, {}, Partial<IContent>>, res: Response, next: NextFunction) => {
     try {
       const { contentId } = req.query;
       const updateData = req.body;
+      const user = req.user;
+
+      if (user?.role === 'Creator') {
+        const creator = await ContentModel.findOne({ creator: user?.sub });
+        if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
+      }
+
       const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, updateData, {
         new: true,
         runValidators: true,
-      });
+      }).exec();
 
       if (!updateContent) {
         return res.status(404).json({ message: 'Content not found' });
@@ -145,19 +165,31 @@ router.patch(
   },
 );
 
-router.delete(':/contentId', async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
-  try {
-    const { contentId } = req.query;
-    const deleteContent = await ContentModel.findByIdAndDelete(contentId);
+router.delete(
+  '/:contentId',
+  loginChecker,
+  roleChecker(['Creator', 'Admin']),
+  async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    try {
+      const { contentId } = req.query;
+      const user = req.user;
 
-    if (!deleteContent) {
-      return res.status(404).json({ message: 'Content not found' });
+      if (user?.role === 'Creator') {
+        const creator = await ContentModel.findOne({ creator: user?.sub });
+        if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
+      }
+
+      const deleteContent = await ContentModel.findByIdAndDelete(contentId);
+
+      if (!deleteContent) {
+        return res.status(404).json({ message: 'Content not found' });
+      }
+
+      res.status(200).json({ message: 'Content deleted successfully' });
+    } catch (error) {
+      next(error);
     }
-
-    res.status(200).json({ message: 'Content deleted successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 export default router;
