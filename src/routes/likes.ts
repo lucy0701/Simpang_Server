@@ -16,16 +16,23 @@ router.post(
 
       if (!content) return res.status(404).json({ message: `Content not found` });
 
-      await LikeModel.create({
-        contentId,
-        userId,
-      });
+      try {
+        await LikeModel.create({
+          contentId,
+          userId,
+        });
+      } catch (error: any) {
+        if (error.code === 11000) {
+          return res.status(400).json({ message: 'User has already liked this content' });
+        }
+        next(error);
+      }
 
       const likeCount = await LikeModel.countDocuments({ contentId }).exec();
       content.likeCount = likeCount;
       await content.save();
 
-      res.status(200).json({ likeCount });
+      res.status(200).json({ likeCount, liked: true });
     } catch (error) {
       next(error);
     }
@@ -71,7 +78,7 @@ router.delete(
       content.likeCount = likeCount;
       await content.save();
 
-      res.status(200).json({ likeCount, likeState: false });
+      res.status(200).json({ likeCount, liked: false });
     } catch (error) {
       next(error);
     }
