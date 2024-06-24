@@ -1,16 +1,15 @@
 export * from './content';
 export * from './result';
-export * from './login';
 export * from './user';
 
 import { JwtPayload } from 'jsonwebtoken';
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Date } from 'mongoose';
 import { Role, ShareType } from '../types';
 
 export interface IBase extends Document {
   contentId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  createdAt: number;
+  createdAt: Date;
 }
 
 export interface IShare extends Omit<IBase, 'userId'> {
@@ -27,8 +26,7 @@ export interface IPayload extends JwtPayload {
   accessToken: string;
 }
 
-export interface PaginationOptions {
-  size: string;
-  page: string;
-  sort?: 'asc' | 'desc';
+export interface ILoginRecord extends Document {
+  userId: mongoose.Types.ObjectId;
+  createdAt: Date;
 }

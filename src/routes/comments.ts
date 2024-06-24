@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { loginChecker, roleChecker, tokenChecker } from '../middlewares/auth';
-import { PaginationOptions } from '../interfaces';
 import ContentModel from '../schemas/Content';
 import CommentModel from '../schemas/Comment';
 import { IComment } from '../interfaces/comment';
+import { PaginationOptions } from '../types';
 
 const router = express.Router();
 

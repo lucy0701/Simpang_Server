@@ -1,6 +1,5 @@
 import { IContent } from '../interfaces';
 import mongoose, { Schema } from 'mongoose';
-import { createdDate } from '../utils';
 
 const ContentSchema = new Schema<IContent>(
   {

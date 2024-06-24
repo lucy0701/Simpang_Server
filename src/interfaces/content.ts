@@ -17,8 +17,8 @@ export interface IContent extends Document {
   playCount: number;
   commentCount: number;
   likeCount: number;
-  createdAt: Date;
-  updatedAt: Date;
   type: ContentType;
   creator: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }

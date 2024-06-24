@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { loginChecker, roleChecker } from '../middlewares/auth';
-import { IContent, IResult, PaginationOptions } from '../interfaces';
+import { IContent, IResult } from '../interfaces';
 import { uploadToImageBB } from '../services';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
@@ -9,6 +9,7 @@ import UserResultModel from '../schemas/UserResult';
 import ShareModel from '../schemas/Share';
 import LikeModel from '../schemas/Like';
 import CommentModel from '../schemas/Comment';
+import { PaginationOptions } from '../types';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });

@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Date, Document } from 'mongoose';
 import { Role } from '../types';
 
 export interface IUser extends Document {
@@ -6,6 +6,6 @@ export interface IUser extends Document {
   name: string;
   thumbnail: string;
   role: Role;
-  createdAt: number;
+  createdAt: Date;
 }
 

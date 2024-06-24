@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Date, Document } from 'mongoose';
 
 export interface IComment extends Document {
   contentId: mongoose.Types.ObjectId;
