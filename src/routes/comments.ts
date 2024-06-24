@@ -32,7 +32,7 @@ router.post(
       content.commentCount = commentCount;
       await content.save();
 
-      res.status(201).json({ newComment, commentCount });
+      res.status(201).json({ newComment });
     } catch (error) {
       next(error);
     }
