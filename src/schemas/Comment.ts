@@ -5,7 +5,7 @@ const CommentSchema = new Schema<IComment>(
   {
     contentId: { type: Schema.Types.ObjectId, required: true, ref: 'Content' },
     userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
-    content: { type: String, minLength: 1, maxLength: 100, required: true },
+    text: { type: String, minLength: 1, maxLength: 100, required: true },
   },
   { timestamps: true },
 );
