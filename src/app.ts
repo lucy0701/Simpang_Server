@@ -6,6 +6,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import contents from './routes/contents';
 import results from './routes/results';
 import kakaoLogin from './routes/kakaoLogin';
+import likes from './routes/likes';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(errorHandler);
 
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
+app.use('/api/v1/likes', likes);
 app.use('/api/oauth2/kakao', kakaoLogin);
 
 app.get('/', (_, res) => {
