@@ -1,15 +1,16 @@
 import axios from 'axios';
 import express, { Request, Response, NextFunction } from 'express';
-import { FE_URL, REST_API_KEY, SECRET_KEY } from '../constants';
+import { FE_URL, REST_API_KEY } from '../constants';
 import UserModel from '../schemas/User';
 import LoginModel from '../schemas/Login';
 import { IUser } from '../interfaces';
 import { AuthToken, UserInfoResponse } from '../types/auth';
 import JwtService from '../utils/jwtService';
+import { loginChecker } from '../middlewares/auth';
 
 const router = express.Router();
 
-router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response, next: NextFunction) => {
+router.get('/login', async (req: Request<{}, {}, {}, { code: string }>, res: Response, next: NextFunction) => {
   try {
     const code = req.query.code;
 
@@ -70,7 +71,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
       createdAt: user.createdAt,
     };
 
-    const token = JwtService.createJWT(user);
+    const token = JwtService.createJWT(user, accessToken);
 
     res.setHeader('Authorization', `Bearer ${token}`);
     res.status(200).json(userInfo);
@@ -79,6 +80,27 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
     if (axios.isAxiosError(error)) {
       console.error('Axios error response data:', error.response?.data);
     }
+    next(error);
+  }
+});
+
+router.get('/logout', loginChecker, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+
+    await axios.post(
+      'https://kapi.kakao.com/v1/user/logout',
+      {},
+      {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      },
+    );
+
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
     next(error);
   }
 });

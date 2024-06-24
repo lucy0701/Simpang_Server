@@ -24,6 +24,7 @@ export interface IUserResult extends IBase {
 
 export interface IPayload extends JwtPayload {
   role: Role;
+  accessToken: string;
 }
 
 export interface PaginationOptions {

@@ -2,11 +2,10 @@ import jwt from 'jsonwebtoken';
 import { IPayload, IUser } from '../interfaces';
 import { SECRET_KEY } from '../constants';
 import { Request } from 'express';
-import { Role } from '../types';
 
 export default class JwtService {
-  static createJWT = (user: IUser): string =>
-    jwt.sign({ sub: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+  static createJWT = (user: IUser, accessToken: string): string =>
+    jwt.sign({ sub: user._id, role: user.role, accessToken}, SECRET_KEY, { expiresIn: '1h' });
 
   static extractToken = (req: Request) => {
     const authHeader = req.headers.authorization;
