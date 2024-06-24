@@ -5,7 +5,7 @@ export * from './user';
 
 import { JwtPayload } from 'jsonwebtoken';
 import mongoose, { Document } from 'mongoose';
-import { Role } from '../types';
+import { Role, ShareType } from '../types';
 
 export interface IBase extends Document {
   contentId: mongoose.Types.ObjectId;
@@ -13,9 +13,11 @@ export interface IBase extends Document {
   createdAt: number;
 }
 
-export interface IShare extends IBase {
-  type: 'Kakao' | 'Link';
+export interface IShare extends Omit<IBase, 'userId'> {
+  userId?: mongoose.Types.ObjectId;
+  type: ShareType;
 }
+
 export interface IUserResult extends IBase {
   resultId: mongoose.Types.ObjectId;
 }
