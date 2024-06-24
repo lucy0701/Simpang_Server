@@ -13,9 +13,11 @@ export interface IBase extends Document {
   createdAt: number;
 }
 
-export interface IShare extends IBase {
+export interface IShare extends Omit<IBase, 'userId'> {
+  userId?: mongoose.Types.ObjectId;
   type: ShareType;
 }
+
 export interface IUserResult extends IBase {
   resultId: mongoose.Types.ObjectId;
 }
