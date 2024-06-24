@@ -1,20 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { loginChecker, roleChecker } from '../middlewares/auth';
-import { IContent, IResult } from '../interfaces';
+import { IContent, IResult, PaginationOptions } from '../interfaces';
 import { uploadToImageBB } from '../services';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
 import UserResultModel from '../schemas/UserResult';
 import ShareModel from '../schemas/Share';
 import LikeModel from '../schemas/Like';
-
-
-interface QueryParams {
-  size: string;
-  page: string;
-  sort?: 'asc' | 'desc';
-}
+import CommentModel from '../schemas/Comment';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -72,16 +66,17 @@ router.post(
   },
 );
 
-router.get('/', async (req: Request<{}, {}, {}, QueryParams>, res: Response, next: NextFunction) => {
+router.get('/', async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
   try {
     const { size, page, sort } = req.query;
 
+    if (!size || !page) {
+      return res.status(400).json({ message: 'Page size and page number are required.' });
+    }
     const sizeNum = Number(size);
     const pageNum = Number(page);
 
-    if (!size || !page) {
-      return res.status(400).json({ message: 'Page size and page number are required.' });
-    } else if (sizeNum < 1 || pageNum < 1) {
+    if (sizeNum < 1 || pageNum < 1) {
       return res.status(400).json({ message: ' Invalid page number or page size. Both must be greater than 0' });
     }
 
@@ -138,6 +133,7 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   }
 });
 
+// TODO: Result, imageUrl upload 추가
 router.patch(
   '/:contentId',
   loginChecker,
@@ -162,7 +158,7 @@ router.patch(
         return res.status(404).json({ message: 'Content not found' });
       }
 
-      return res.status(404).json({ updateContent });
+      res.status(200).json({ updateContent });
     } catch (error) {
       next(error);
     }
@@ -189,6 +185,7 @@ router.delete(
         ShareModel.deleteMany({ contentId }),
         LikeModel.deleteMany({ contentId }),
         ResultModel.deleteMany({ contentId }),
+        CommentModel.deleteMany({ contentId }),
       ]);
 
       const deleteContent = await ContentModel.findByIdAndDelete(contentId).exec();

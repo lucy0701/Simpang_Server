@@ -25,3 +25,9 @@ export interface IUserResult extends IBase {
 export interface IPayload extends JwtPayload {
   role: Role;
 }
+
+export interface PaginationOptions {
+  size: string;
+  page: string;
+  sort?: 'asc' | 'desc';
+}

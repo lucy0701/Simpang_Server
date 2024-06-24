@@ -8,6 +8,7 @@ import results from './routes/results';
 import kakaoLogin from './routes/kakaoLogin';
 import likes from './routes/likes';
 import shares from './routes/shares';
+import comments from './routes/comments';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(errorHandler);
 
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
+app.use('/api/v1/comments', comments);
 app.use('/api/v1/likes', likes);
 app.use('/api/v1/shares', shares);
 app.use('/api/oauth2/kakao', kakaoLogin);
