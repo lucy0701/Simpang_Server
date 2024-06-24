@@ -4,7 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ShareSchema = new Schema<IShare>({
   contentId: { type: Schema.Types.ObjectId, required: true, ref: 'Content' },
-  userId: { type: Schema.Types.ObjectId, required: true, ref: 'Member' },
+  userId: { type: Schema.Types.ObjectId, ref: 'Member' },
   createdAt: {
     type: Number,
     require: true,

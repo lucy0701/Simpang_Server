@@ -5,7 +5,10 @@ import { FE_URL, MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares/errorHandler';
 import contents from './routes/contents';
 import results from './routes/results';
-import kakaoLogin from './routes/kakaoLogin';
+import kakao from './routes/kakao';
+import likes from './routes/likes';
+import shares from './routes/shares';
+import comments from './routes/comments';
 
 const app = express();
 
@@ -28,7 +31,10 @@ app.use(errorHandler);
 
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
-app.use('/api/oauth2/kakao', kakaoLogin);
+app.use('/api/v1/comments', comments);
+app.use('/api/v1/likes', likes);
+app.use('/api/v1/shares', shares);
+app.use('/api/oauth2/kakao', kakao);
 
 app.get('/', (_, res) => {
   res.send('Hello World!');

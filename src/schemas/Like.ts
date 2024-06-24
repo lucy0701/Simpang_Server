@@ -12,4 +12,6 @@ const LikeSchema = new Schema<IBase>({
   },
 });
 
+LikeSchema.index({ contentId: 1, userId: 1 }, { unique: true });
+
 export default mongoose.model<IBase>('Like', LikeSchema);
