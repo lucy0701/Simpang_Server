@@ -4,6 +4,8 @@ import ContentModel from '../schemas/Content';
 import CommentModel from '../schemas/Comment';
 import { IComment } from '../interfaces/comment';
 import { PaginationOptions } from '../types';
+import { getPaginatedDocuments } from '../utils';
+import { validatePagination } from '../middlewares/validatePagination';
 
 const router = express.Router();
 
@@ -41,37 +43,18 @@ router.post(
 
 router.get(
   '/:contentId',
+  validatePagination,
   tokenChecker,
-  async (
-    req: Request<{ contentId: string }, {}, {}, Partial<PaginationOptions>>,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  async (req: Request<{ contentId: string }, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
     try {
       const { contentId } = req.params;
       const { size, page, sort } = req.query;
-
-      if (!size || !page) {
-        return res.status(400).json({ message: 'Page size and page number are required.' });
-      }
-      const sizeNum = Number(size);
-      const pageNum = Number(page);
-
-      if (sizeNum < 1 || pageNum < 1) {
-        return res.status(400).json({ message: ' Invalid page number or page size. Both must be greater than 0' });
-      }
-
-      const totalCount = await CommentModel.countDocuments({ contentId }).exec();
-      const totalPage = Math.ceil(totalCount / sizeNum);
-      const commentSort = CommentModel.find({ contentId });
-
-      if (sort === 'asc') commentSort.sort({ createdAt: 1 });
-      else commentSort.sort({ createdAt: -1 });
-
-      const comments: IComment[] = await commentSort
-        .skip((pageNum - 1) * sizeNum)
-        .limit(sizeNum)
-        .exec();
+      const {
+        totalCount,
+        totalPage,
+        documents: comments,
+        pageNum,
+      } = await getPaginatedDocuments(ContentModel, { contentId }, sort || 'desc', page, size);
 
       res.status(200).json({
         totalCount,

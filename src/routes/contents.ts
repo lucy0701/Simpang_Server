@@ -10,6 +10,8 @@ import ShareModel from '../schemas/Share';
 import LikeModel from '../schemas/Like';
 import CommentModel from '../schemas/Comment';
 import { PaginationOptions } from '../types';
+import { validatePagination } from '../middlewares/validatePagination';
+import { getPaginatedDocuments } from '../utils/pagination';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -67,46 +69,35 @@ router.post(
   },
 );
 
-router.get('/', async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
-  try {
-    const { size, page, sort } = req.query;
+router.get(
+  '/',
+  validatePagination,
+  async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    try {
+      const { size, page, sort } = req.query;
+      const {
+        totalCount,
+        totalPage,
+        documents: contents,
+        pageNum,
+      } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
 
-    if (!size || !page) {
-      return res.status(400).json({ message: 'Page size and page number are required.' });
+      const filteredContent: Partial<IContent>[] = contents.map((content) => {
+        const { questions, results, ...filteredContent } = content.toObject();
+        return filteredContent;
+      });
+
+      res.status(200).json({
+        totalCount,
+        totalPage,
+        currentPage: pageNum,
+        contents: filteredContent,
+      });
+    } catch (error) {
+      next(error);
     }
-    const sizeNum = Number(size);
-    const pageNum = Number(page);
-
-    if (sizeNum < 1 || pageNum < 1) {
-      return res.status(400).json({ message: ' Invalid page number or page size. Both must be greater than 0' });
-    }
-
-    const totalCount = await ContentModel.countDocuments();
-    const totalPage = Math.ceil(totalCount / sizeNum);
-    const contentSort = ContentModel.find();
-
-    if (sort === 'asc') contentSort.sort({ createdAt: 1 });
-    else contentSort.sort({ createAt: -1 });
-
-    const contents: IContent[] = await contentSort
-      .skip((pageNum - 1) * sizeNum)
-      .limit(sizeNum)
-      .exec();
-
-    const filteredContent: Partial<IContent>[] = contents.map((content) => {
-      const { questions, results, __v, ...filteredContent } = content.toObject();
-      return filteredContent;
-    });
-
-    res.status(200).json({
-      totalPage,
-      currentPage: pageNum,
-      contents: filteredContent,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 router.get('/random', async (_, res: Response, next: NextFunction) => {
   try {
