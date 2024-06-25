@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 export const validatePagination = (req: Request, res: Response, next: NextFunction) => {
   try {
     const { size, page, sort } = req.query;
-    if (!size || !size) {
+    if (!size || !page) {
       return res.status(400).json({ message: 'Page size and page number are required.' });
     }
 

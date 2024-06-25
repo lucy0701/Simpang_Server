@@ -54,7 +54,7 @@ router.get(
         totalPage,
         documents: comments,
         pageNum,
-      } = await getPaginatedDocuments(ContentModel, { contentId }, sort || 'desc', page, size);
+      } = await getPaginatedDocuments(CommentModel, { contentId }, sort || 'desc', page, size);
 
       res.status(200).json({
         totalCount,
