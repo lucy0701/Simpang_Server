@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 
+import { STATUS_MESSAGES } from '../constants';
+
 import { loginChecker, tokenChecker } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import LikeModel from '../schemas/Like';
@@ -15,7 +17,7 @@ router.post(
       const userId = req.user?.sub;
       const content = await ContentModel.findById(contentId).exec();
 
-      if (!content) return res.status(404).json({ message: `Content not found` });
+      if (!content) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
 
       try {
         await LikeModel.create({
@@ -24,7 +26,7 @@ router.post(
         });
       } catch (error: any) {
         if (error.code === 11000) {
-          return res.status(400).json({ message: 'User has already liked this content' });
+          return res.status(400).json({ message: STATUS_MESSAGES.DUPLICATE_REQUEST });
         }
         next(error);
       }
@@ -70,8 +72,8 @@ router.delete(
       const like = await LikeModel.findOne({ contentId, userId }).exec();
       const content = await ContentModel.findById(contentId).exec();
 
-      if (!like) return res.status(404).json({ message: `Like not found` });
-      if (!content) return res.status(404).json({ message: `Content not found` });
+      if (!like) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
+      if (!content) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
 
       await LikeModel.findByIdAndDelete(like._id).exec();
 

@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 
+import { STATUS_MESSAGES } from '../constants';
 import { ShareType } from '../types';
 
 import { tokenChecker } from '../middlewares';
@@ -27,11 +28,11 @@ router.post(
           type,
         });
 
-        return res.status(200).json({ message: 'Content Share successfully' });
+        return res.status(200).json({ message: STATUS_MESSAGES.SUCCESS });
       } else if (type === 'Kakao' && !user) {
-        return res.status(401).json({ message: 'User not found' });
+        return res.status(401).json({ message: STATUS_MESSAGES.NOT_FOUND });
       } else {
-        return res.status(400).json({ message: 'Invalid share type' });
+        return res.status(400).json({ message: STATUS_MESSAGES.BAD_REQUEST });
       }
     } catch (error) {
       next(error);

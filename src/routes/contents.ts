@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 
+import { STATUS_MESSAGES } from '../constants';
 import { IContent, IResult } from '../interfaces';
 import { PaginationOptions } from '../types';
 import { getPaginatedDocuments } from '../utils/pagination';
@@ -29,7 +30,7 @@ router.post(
       if (req.body.type === 'MBTI') {
         if (req.body.questions.length !== 12 || req.body.results.length) {
           return res.status(400).json({
-            message: 'For MBTI type, there must be exacthly 12 questions and 16 results.',
+            message: STATUS_MESSAGES.BAD_REQUEST,
           });
         }
       }
@@ -63,7 +64,7 @@ router.post(
 
       await newContent.save();
 
-      res.status(201).json(newContent);
+      res.status(201).json({ message: STATUS_MESSAGES.CREATED });
     } catch (error) {
       next(error);
     }
@@ -139,7 +140,7 @@ router.patch(
 
       if (user?.role === 'Creator') {
         const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
-        if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        if (!creator) return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
       }
 
       const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, updateData, {
@@ -148,10 +149,10 @@ router.patch(
       }).exec();
 
       if (!updateContent) {
-        return res.status(404).json({ message: 'Content not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      res.status(200).json({ updateContent });
+      res.status(200).json({ message: STATUS_MESSAGES.UPDATED });
     } catch (error) {
       next(error);
     }
@@ -170,7 +171,7 @@ router.delete(
       if (user?.role === 'Creator') {
         const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
         if (!creator) {
-          return res.status(403).json({ message: '접근 권한이 없습니다.' });
+          return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
         }
       }
       await Promise.all([
@@ -184,10 +185,10 @@ router.delete(
       const deleteContent = await ContentModel.findByIdAndDelete(contentId).exec();
 
       if (!deleteContent) {
-        return res.status(404).json({ message: 'Content not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      res.status(200).json({ message: 'Content deleted successfully' });
+      res.status(200).json({ message: STATUS_MESSAGES.DELETED });
     } catch (error) {
       next(error);
     }

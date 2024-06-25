@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+import { STATUS_MESSAGES } from '../constants';
 import { Role } from '../types';
 import JwtService from '../utils/jwtService';
 
@@ -15,16 +16,16 @@ export const loginChecker = async (req: Request, res: Response, next: NextFuncti
     const user = JwtService.getUserRequest(req);
 
     if (!user) {
-      return res.status(401).send({ message: '엑세스 토큰을 입력해 주세요.' });
+      return res.status(401).send({ message: STATUS_MESSAGES.PROVIDE_ACCESS_TOKEN });
     }
 
     req.user = user;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(403).send({ message: '엑세스 토큰이 만료되었습니다.' });
+      return res.status(403).send({ message: STATUS_MESSAGES.TOKEN_EXPIRED });
     } else if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(403).send({ message: '유효하지 않은 토큰입니다.' });
+      return res.status(403).send({ message: STATUS_MESSAGES.TOKEN_INVALID });
     }
     next(error);
   }
@@ -34,7 +35,7 @@ export const roleChecker = (roles: Role[]) => (req: Request, res: Response, next
   const user = req.user;
 
   if (!user || !roles.includes(user.role)) {
-    return res.status(403).json({ message: '접근 권한이 없습니다.' });
+    return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
   }
 
   next();

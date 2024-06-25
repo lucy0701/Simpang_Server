@@ -1,7 +1,7 @@
 import axios from 'axios';
 import express, { Request, Response, NextFunction } from 'express';
 
-import { FE_URL, REST_API_KEY } from '../constants';
+import { FE_URL, REST_API_KEY, STATUS_MESSAGES } from '../constants';
 import { IUser } from '../interfaces';
 import { AuthToken, UserInfoResponse } from '../types';
 import JwtService from '../utils/jwtService';
@@ -17,7 +17,7 @@ router.get('/login', async (req: Request<{}, {}, {}, { code: string }>, res: Res
     const code = req.query.code;
 
     if (!code) {
-      return res.status(400).json({ message: 'Authorization code is missing.' });
+      return res.status(400).json({ message: STATUS_MESSAGES.PROVIDE_ACCESS_TOKEN });
     }
 
     const authToken = await axios.post<AuthToken>(
@@ -101,7 +101,7 @@ router.get('/logout', loginChecker, async (req: Request, res: Response, next: Ne
       },
     );
 
-    res.status(200).json({ message: 'Logged out successfully' });
+    res.status(200).json({ message: STATUS_MESSAGES.LOGOUT_SUCCESS });
   } catch (error) {
     next(error);
   }

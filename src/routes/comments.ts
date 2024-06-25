@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 
+import { STATUS_MESSAGES } from '../constants';
 import { PaginationOptions } from '../types';
 
 import { IComment } from '../interfaces/comment';
@@ -19,13 +20,13 @@ router.post(
       const { text } = req.body;
       const userId = req.user?.sub;
 
-      if (!text) return res.status(400).json({ message: 'text is required' });
+      if (!text) return res.status(400).json({ message: STATUS_MESSAGES.BAD_REQUEST });
 
       const content = await ContentModel.findById(contentId).exec();
 
-      if (!content) return res.status(404).json({ message: 'Content not found' });
+      if (!content) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
 
-      const newComment = await CommentModel.create({
+      await CommentModel.create({
         contentId,
         userId,
         text,
@@ -35,7 +36,7 @@ router.post(
       content.commentCount = commentCount;
       await content.save();
 
-      res.status(201).json({ newComment });
+      res.status(201).json({ message: STATUS_MESSAGES.CREATED });
     } catch (error) {
       next(error);
     }
@@ -86,9 +87,9 @@ router.patch(
         },
       ).exec();
 
-      if (!updateComment) return res.status(404).json({ message: 'Comment not found' });
+      if (!updateComment) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
 
-      res.status(200).json({ updateComment });
+      res.status(200).json({ message: STATUS_MESSAGES.UPDATED });
     } catch (error) {
       next(error);
     }
@@ -107,17 +108,17 @@ router.delete(
       const comment = await CommentModel.findById(commentId).exec();
 
       if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
       if (user?.role === 'Admin' || user?.sub === comment.userId.toString()) {
         const deleteComment = await CommentModel.findByIdAndDelete(commentId).exec();
 
-        if (!deleteComment) return res.status(404).json({ message: 'Comment not found' });
+        if (!deleteComment) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
 
-        return res.status(200).json({ message: 'Comment deleted successfully' });
+        return res.status(200).json({ message: STATUS_MESSAGES.DELETED });
       } else {
-        return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
       }
     } catch (error) {
       next(error);
