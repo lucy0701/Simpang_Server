@@ -1,7 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { loginChecker, tokenChecker } from '../middlewares/auth';
-import LikeModel from '../schemas/Like';
+
+import { loginChecker, tokenChecker } from '../middlewares';
 import ContentModel from '../schemas/Content';
+import LikeModel from '../schemas/Like';
 
 const router = express.Router();
 

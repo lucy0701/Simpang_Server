@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { tokenChecker } from '../middlewares/auth';
+
 import { ShareType } from '../types';
+
+import { tokenChecker } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import ShareModel from '../schemas/Share';
 

@@ -1,12 +1,14 @@
 import axios from 'axios';
 import express, { Request, Response, NextFunction } from 'express';
+
 import { FE_URL, REST_API_KEY } from '../constants';
-import UserModel from '../schemas/User';
-import LoginModel from '../schemas/Login';
 import { IUser } from '../interfaces';
-import { AuthToken, UserInfoResponse } from '../types/auth';
+import { AuthToken, UserInfoResponse } from '../types';
 import JwtService from '../utils/jwtService';
-import { loginChecker } from '../middlewares/auth';
+
+import { loginChecker } from '../middlewares';
+import LoginModel from '../schemas/Login';
+import UserModel from '../schemas/User';
 
 const router = express.Router();
 

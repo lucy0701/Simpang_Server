@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+
 import { IResult } from '../interfaces';
 
 const ResultSchema = new Schema<IResult>({

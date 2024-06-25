@@ -1,17 +1,18 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
-import { loginChecker, roleChecker } from '../middlewares/auth';
+
 import { IContent, IResult } from '../interfaces';
-import { uploadToImageBB } from '../services';
-import ContentModel from '../schemas/Content';
-import ResultModel from '../schemas/Result';
-import UserResultModel from '../schemas/UserResult';
-import ShareModel from '../schemas/Share';
-import LikeModel from '../schemas/Like';
-import CommentModel from '../schemas/Comment';
 import { PaginationOptions } from '../types';
-import { validatePagination } from '../middlewares/validatePagination';
 import { getPaginatedDocuments } from '../utils/pagination';
+
+import { loginChecker, roleChecker, validatePagination } from '../middlewares';
+import CommentModel from '../schemas/Comment';
+import ContentModel from '../schemas/Content';
+import LikeModel from '../schemas/Like';
+import ResultModel from '../schemas/Result';
+import ShareModel from '../schemas/Share';
+import UserResultModel from '../schemas/UserResult';
+import { uploadToImageBB } from '../services';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -104,7 +105,7 @@ router.get('/random', async (_, res: Response, next: NextFunction) => {
     const randomContent = await ContentModel.aggregate([{ $sample: { size: 1 } }]);
 
     if (!randomContent || randomContent.length === 0) {
-      return res.status(404).json({ message: 'No results found' });
+      return res.status(404).json({ message: 'Results not found' });
     }
 
     res.status(200).json(randomContent);

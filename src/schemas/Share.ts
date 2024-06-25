@@ -1,5 +1,6 @@
-import { IShare } from '../interfaces';
 import mongoose, { Schema } from 'mongoose';
+
+import { IShare } from '../interfaces';
 
 const ShareSchema = new Schema<IShare>(
   {

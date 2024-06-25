@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import JwtService from '../utils/jwtService';
+
 import { Role } from '../types';
+import JwtService from '../utils/jwtService';
 
 export const tokenChecker = (req: Request, _res: Response, next: NextFunction) => {
   const user = JwtService.getUserRequest(req);
@@ -29,14 +30,12 @@ export const loginChecker = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const roleChecker = (roles: Role[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
+export const roleChecker = (roles: Role[]) => (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user;
 
-    if (!user || !roles.includes(user.role)) {
-      return res.status(403).json({ message: '접근 권한이 없습니다.' });
-    }
+  if (!user || !roles.includes(user.role)) {
+    return res.status(403).json({ message: '접근 권한이 없습니다.' });
+  }
 
-    next();
-  };
+  next();
 };

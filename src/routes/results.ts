@@ -1,9 +1,11 @@
 import express, { NextFunction, Request, Response } from 'express';
+
+import { IContent, IResult } from '../interfaces';
+
+import { tokenChecker } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
 import UserResultModel from '../schemas/UserResult';
-import { IContent, IResult } from '../interfaces';
-import { tokenChecker } from '../middlewares/auth';
 
 const router = express.Router();
 

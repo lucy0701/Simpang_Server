@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+
 import { ILoginRecord } from '../interfaces';
 
 const LoginSchema = new Schema<ILoginRecord>(

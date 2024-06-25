@@ -1,11 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { loginChecker, roleChecker, tokenChecker } from '../middlewares/auth';
-import ContentModel from '../schemas/Content';
-import CommentModel from '../schemas/Comment';
-import { IComment } from '../interfaces/comment';
+
 import { PaginationOptions } from '../types';
+
+import { IComment } from '../interfaces/comment';
+import { loginChecker, roleChecker, tokenChecker, validatePagination } from '../middlewares';
+import CommentModel from '../schemas/Comment';
+import ContentModel from '../schemas/Content';
 import { getPaginatedDocuments } from '../utils';
-import { validatePagination } from '../middlewares/validatePagination';
 
 const router = express.Router();
 

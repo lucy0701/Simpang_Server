@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+
 import { IBase } from '../interfaces';
 
 const LikeSchema = new Schema<IBase>(

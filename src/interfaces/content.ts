@@ -1,5 +1,6 @@
-import { ContentType } from '../types';
 import mongoose, { Date, Document } from 'mongoose';
+
+import { ContentType } from '../types';
 
 export interface IContent extends Document {
   title: string;

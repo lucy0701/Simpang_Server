@@ -1,5 +1,6 @@
-import { IContent } from '../interfaces';
 import mongoose, { Schema } from 'mongoose';
+
+import { IContent } from '../interfaces';
 
 const ContentSchema = new Schema<IContent>(
   {

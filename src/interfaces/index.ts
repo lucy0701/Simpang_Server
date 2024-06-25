@@ -4,6 +4,7 @@ export * from './user';
 
 import { JwtPayload } from 'jsonwebtoken';
 import mongoose, { Document, Date } from 'mongoose';
+
 import { Role, ShareType } from '../types';
 
 export interface IBase extends Document {

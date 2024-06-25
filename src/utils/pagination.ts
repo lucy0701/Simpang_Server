@@ -1,4 +1,5 @@
 import { Document, Model } from 'mongoose';
+
 import { Sort } from '../types';
 
 export const getPaginatedDocuments = async <T extends Document>(

@@ -1,14 +1,15 @@
+import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors';
+
 import { FE_URL, MONGODB_URI, PORT } from './constants';
-import { errorHandler } from './middlewares/errorHandler';
+import { errorHandler } from './middlewares';
+import comments from './routes/comments';
 import contents from './routes/contents';
-import results from './routes/results';
 import kakao from './routes/kakao';
 import likes from './routes/likes';
+import results from './routes/results';
 import shares from './routes/shares';
-import comments from './routes/comments';
 
 const app = express();
 
