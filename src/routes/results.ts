@@ -1,9 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
+
+import { STATUS_MESSAGES } from '../constants';
+import { IContent, IResult } from '../interfaces';
+
+import { tokenChecker } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
 import UserResultModel from '../schemas/UserResult';
-import { IContent, IResult } from '../interfaces';
-import { tokenChecker } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -29,17 +32,17 @@ router.post(
       const user = req.user;
 
       if (!contentId || !score) {
-        return res.status(400).json({ message: 'Missing required fields: score or contentId' });
+        return res.status(400).json({ message: STATUS_MESSAGES.MISSING_FIELD });
       }
 
       if (score.length !== 4 || !score.every((num) => typeof num === 'number')) {
-        return res.status(400).json({ message: 'Score must be an array of four numbers' });
+        return res.status(400).json({ message: STATUS_MESSAGES.BAD_REQUEST });
       }
 
       const content = await ContentModel.findById<IContent>(contentId);
 
       if (!content) {
-        return res.status(404).json({ message: 'Content not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
       content.playCount = (content.playCount || 0) + 1;
@@ -49,7 +52,7 @@ router.post(
       const resultData = await ResultModel.findOne<IResult>({ contentId, result });
 
       if (!resultData) {
-        return res.status(404).json({ message: 'Result not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
       if (user) {
@@ -82,7 +85,7 @@ router.get('/:resultId', async (req: Request<{ resultId: string }>, res: Respons
     const result = await ResultModel.findById<IResult>(resultId);
 
     if (!result) {
-      return res.status(404).json({ message: 'Result not found' });
+      return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
     }
 
     res.status(200).json(result);
