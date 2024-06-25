@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { IMAGE_BB_API_KEY } from '../constants';
 import FormData from 'form-data';
+
+import { IMAGE_BB_API_KEY } from '../constants';
 
 export const uploadToImageBB = async (imageFile: Express.Multer.File) => {
   const data = new FormData();
@@ -20,7 +21,7 @@ export const uploadToImageBB = async (imageFile: Express.Multer.File) => {
   try {
     const response = await axios.request(config);
     return response.data.data.url;
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Image upload failed');
   }
 };

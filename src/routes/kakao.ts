@@ -1,20 +1,23 @@
 import axios from 'axios';
 import express, { Request, Response, NextFunction } from 'express';
-import { FE_URL, REST_API_KEY, SECRET_KEY } from '../constants';
-import UserModel from '../schemas/User';
-import LoginModel from '../schemas/Login';
+
+import { FE_URL, REST_API_KEY, STATUS_MESSAGES } from '../constants';
 import { IUser } from '../interfaces';
-import { AuthToken, UserInfoResponse } from '../types/auth';
+import { AuthToken, UserInfoResponse } from '../types';
 import JwtService from '../utils/jwtService';
+
+import { loginChecker } from '../middlewares';
+import LoginModel from '../schemas/Login';
+import UserModel from '../schemas/User';
 
 const router = express.Router();
 
-router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response, next: NextFunction) => {
+router.get('/login', async (req: Request<{}, {}, {}, { code: string }>, res: Response, next: NextFunction) => {
   try {
     const code = req.query.code;
 
     if (!code) {
-      return res.status(400).json({ message: 'Authorization code is missing.' });
+      return res.status(400).json({ message: STATUS_MESSAGES.PROVIDE_ACCESS_TOKEN });
     }
 
     const authToken = await axios.post<AuthToken>(
@@ -70,7 +73,7 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
       createdAt: user.createdAt,
     };
 
-    const token = JwtService.createJWT(user);
+    const token = JwtService.createJWT(user, accessToken);
 
     res.setHeader('Authorization', `Bearer ${token}`);
     res.status(200).json(userInfo);
@@ -79,6 +82,27 @@ router.get('/', async (req: Request<{}, {}, {}, { code: string }>, res: Response
     if (axios.isAxiosError(error)) {
       console.error('Axios error response data:', error.response?.data);
     }
+    next(error);
+  }
+});
+
+router.get('/logout', loginChecker, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+
+    await axios.post(
+      'https://kapi.kakao.com/v1/user/logout',
+      {},
+      {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      },
+    );
+
+    res.status(200).json({ message: STATUS_MESSAGES.LOGOUT_SUCCESS });
+  } catch (error) {
     next(error);
   }
 });

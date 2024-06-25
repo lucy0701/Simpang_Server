@@ -1,11 +1,15 @@
+import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors';
+
 import { FE_URL, MONGODB_URI, PORT } from './constants';
-import { errorHandler } from './middlewares/errorHandler';
+import { errorHandler } from './middlewares';
+import comments from './routes/comments';
 import contents from './routes/contents';
+import kakao from './routes/kakao';
+import likes from './routes/likes';
 import results from './routes/results';
-import kakaoLogin from './routes/kakaoLogin';
+import shares from './routes/shares';
 
 const app = express();
 
@@ -28,7 +32,10 @@ app.use(errorHandler);
 
 app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
-app.use('/api/oauth2/kakao', kakaoLogin);
+app.use('/api/v1/comments', comments);
+app.use('/api/v1/likes', likes);
+app.use('/api/v1/shares', shares);
+app.use('/api/oauth2/kakao', kakao);
 
 app.get('/', (_, res) => {
   res.send('Hello World!');

@@ -1,18 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
-import { createdDate } from '../utils';
-import { ILogin } from '../interfaces';
 
-const LoginSchema = new Schema<ILogin>({
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  loginTime: {
-    type: Number,
-    required: true,
-    default: createdDate,
-  },
-});
+import { ILoginRecord } from '../interfaces';
 
-export default mongoose.model<ILogin>('Login', LoginSchema);
+const LoginSchema = new Schema<ILoginRecord>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+  },
+  { timestamps: true },
+);
+
+export default mongoose.model<ILoginRecord>('Login', LoginSchema);

@@ -1,20 +1,19 @@
 import express, { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
-import { loginChecker, roleChecker } from '../middlewares/auth';
+
+import { STATUS_MESSAGES } from '../constants';
 import { IContent, IResult } from '../interfaces';
-import { uploadToImageBB } from '../services';
+import { PaginationOptions } from '../types';
+import { getPaginatedDocuments } from '../utils/pagination';
+
+import { loginChecker, roleChecker, validatePagination } from '../middlewares';
+import CommentModel from '../schemas/Comment';
 import ContentModel from '../schemas/Content';
-import ResultModel from '../schemas/Result';
-import UserResultModel from '../schemas/UserResult';
-import ShareModel from '../schemas/Share';
 import LikeModel from '../schemas/Like';
-
-
-interface QueryParams {
-  size: string;
-  page: string;
-  sort?: 'asc' | 'desc';
-}
+import ResultModel from '../schemas/Result';
+import ShareModel from '../schemas/Share';
+import UserResultModel from '../schemas/UserResult';
+import { uploadToImageBB } from '../services';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -31,7 +30,7 @@ router.post(
       if (req.body.type === 'MBTI') {
         if (req.body.questions.length !== 12 || req.body.results.length) {
           return res.status(400).json({
-            message: 'For MBTI type, there must be exacthly 12 questions and 16 results.',
+            message: STATUS_MESSAGES.BAD_REQUEST,
           });
         }
       }
@@ -65,59 +64,49 @@ router.post(
 
       await newContent.save();
 
-      res.status(201).json(newContent);
+      res.status(201).json({ message: STATUS_MESSAGES.CREATED });
     } catch (error) {
       next(error);
     }
   },
 );
 
-router.get('/', async (req: Request<{}, {}, {}, QueryParams>, res: Response, next: NextFunction) => {
-  try {
-    const { size, page, sort } = req.query;
+router.get(
+  '/',
+  validatePagination,
+  async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    try {
+      const { size, page, sort } = req.query;
+      const {
+        totalCount,
+        totalPage,
+        documents: contents,
+        pageNum,
+      } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
 
-    const sizeNum = Number(size);
-    const pageNum = Number(page);
+      const filteredContent: Partial<IContent>[] = contents.map((content) => {
+        const { questions, results, ...filteredContent } = content.toObject();
+        return filteredContent;
+      });
 
-    if (!size || !page) {
-      return res.status(400).json({ message: 'Page size and page number are required.' });
-    } else if (sizeNum < 1 || pageNum < 1) {
-      return res.status(400).json({ message: ' Invalid page number or page size. Both must be greater than 0' });
+      res.status(200).json({
+        totalCount,
+        totalPage,
+        currentPage: pageNum,
+        contents: filteredContent,
+      });
+    } catch (error) {
+      next(error);
     }
-
-    const totalCount = await ContentModel.countDocuments();
-    const totalPage = Math.ceil(totalCount / sizeNum);
-    const contentSort = ContentModel.find();
-
-    if (sort === 'asc') contentSort.sort({ createdAt: 1 });
-    else contentSort.sort({ createAt: -1 });
-
-    const contents: IContent[] = await contentSort
-      .skip((pageNum - 1) * sizeNum)
-      .limit(sizeNum)
-      .exec();
-
-    const filteredContent: Partial<IContent>[] = contents.map((content) => {
-      const { questions, results, __v, ...filteredContent } = content.toObject();
-      return filteredContent;
-    });
-
-    res.status(200).json({
-      totalPage,
-      currentPage: pageNum,
-      contents: filteredContent,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 router.get('/random', async (_, res: Response, next: NextFunction) => {
   try {
     const randomContent = await ContentModel.aggregate([{ $sample: { size: 1 } }]);
 
     if (!randomContent || randomContent.length === 0) {
-      return res.status(404).json({ message: 'No results found' });
+      return res.status(404).json({ message: 'Results not found' });
     }
 
     res.status(200).json(randomContent);
@@ -138,6 +127,7 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   }
 });
 
+// TODO: Result, imageUrl upload 추가
 router.patch(
   '/:contentId',
   loginChecker,
@@ -150,7 +140,7 @@ router.patch(
 
       if (user?.role === 'Creator') {
         const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
-        if (!creator) return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        if (!creator) return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
       }
 
       const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, updateData, {
@@ -159,10 +149,10 @@ router.patch(
       }).exec();
 
       if (!updateContent) {
-        return res.status(404).json({ message: 'Content not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      return res.status(404).json({ updateContent });
+      res.status(200).json({ message: STATUS_MESSAGES.UPDATED });
     } catch (error) {
       next(error);
     }
@@ -181,7 +171,7 @@ router.delete(
       if (user?.role === 'Creator') {
         const creator = await ContentModel.findOne({ creator: user?.sub, _id: contentId }).exec();
         if (!creator) {
-          return res.status(403).json({ message: '접근 권한이 없습니다.' });
+          return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
         }
       }
       await Promise.all([
@@ -189,15 +179,16 @@ router.delete(
         ShareModel.deleteMany({ contentId }),
         LikeModel.deleteMany({ contentId }),
         ResultModel.deleteMany({ contentId }),
+        CommentModel.deleteMany({ contentId }),
       ]);
 
       const deleteContent = await ContentModel.findByIdAndDelete(contentId).exec();
 
       if (!deleteContent) {
-        return res.status(404).json({ message: 'Content not found' });
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      res.status(200).json({ message: 'Content deleted successfully' });
+      res.status(200).json({ message: STATUS_MESSAGES.DELETED });
     } catch (error) {
       next(error);
     }
