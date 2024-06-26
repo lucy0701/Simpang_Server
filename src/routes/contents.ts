@@ -24,6 +24,7 @@ router.post(
   roleChecker(['Creator', 'Admin']),
   upload.fields([{ name: 'imageUrls' }]),
   async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const user = req.user;
 
@@ -75,6 +76,7 @@ router.get(
   '/',
   validatePagination,
   async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { size, page, sort } = req.query;
       const {
@@ -102,6 +104,7 @@ router.get(
 );
 
 router.get('/random', async (_, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Content']
   try {
     const randomContent = await ContentModel.aggregate([{ $sample: { size: 1 } }]);
 
@@ -116,6 +119,7 @@ router.get('/random', async (_, res: Response, next: NextFunction) => {
 });
 
 router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Content']
   try {
     const { contentId } = req.params;
 
@@ -133,6 +137,7 @@ router.patch(
   loginChecker,
   roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { contentId } = req.params;
       const { results, ...contentData } = req.body;
@@ -175,6 +180,7 @@ router.delete(
   loginChecker,
   roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { contentId } = req.params;
       const user = req.user;

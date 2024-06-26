@@ -15,6 +15,7 @@ router.post(
   '/:contentId',
   loginChecker,
   async (req: Request<{ contentId: string }, {}, { text: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Comment']
     try {
       const { contentId } = req.params;
       const { text } = req.body;
@@ -48,6 +49,7 @@ router.get(
   validatePagination,
   tokenChecker,
   async (req: Request<{ contentId: string }, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Comment']
     try {
       const { contentId } = req.params;
       const { size, page, sort } = req.query;
@@ -74,6 +76,7 @@ router.patch(
   '/:commentId',
   loginChecker,
   async (req: Request<{ commentId: string }, {}, { text: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Comment']
     try {
       const { commentId } = req.params;
       const { text } = req.body;
@@ -101,6 +104,7 @@ router.delete(
   loginChecker,
   roleChecker(['Creator', 'User', 'Admin']),
   async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Comment']
     try {
       const { commentId } = req.params;
       const user = req.user;

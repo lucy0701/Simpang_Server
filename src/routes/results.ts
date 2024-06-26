@@ -26,6 +26,7 @@ router.post(
   '/:contentId',
   tokenChecker,
   async (req: Request<{ contentId: string }, {}, { score: Score }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Rusult']
     try {
       const { contentId } = req.params;
       const { score } = req.body;
@@ -79,6 +80,7 @@ router.post(
 );
 
 router.get('/:resultId', async (req: Request<{ resultId: string }>, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Rusult']
   try {
     const { resultId } = req.params;
 
