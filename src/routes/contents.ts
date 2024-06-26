@@ -24,6 +24,20 @@ router.post(
   roleChecker(['Creator', 'Admin']),
   upload.fields([{ name: 'imageUrls' }]),
   async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
+    // #swagger.summary = 'test'
+    // #swagger.description = 'test'
+    /*  #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        $ref: "#/components/schemas/someSchema"
+                    }
+                }
+            }
+        }
+    */
     try {
       const user = req.user;
 
