@@ -12,6 +12,7 @@ router.post(
   '/:contentId',
   loginChecker,
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['like']
     try {
       const { contentId } = req.params;
       const userId = req.user?.sub;
@@ -46,6 +47,7 @@ router.get(
   '/:contentId',
   tokenChecker,
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['like']
     try {
       const { contentId } = req.params;
       const userId = req.user?.sub;
@@ -65,6 +67,7 @@ router.delete(
   '/:contentId',
   loginChecker,
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['like']
     try {
       const { contentId } = req.params;
       const userId = req.user?.sub;

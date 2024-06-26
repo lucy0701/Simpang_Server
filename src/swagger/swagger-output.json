@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "simpang",
-    "description": "심팡의 서버입니당!",
+    "title": "Simpang",
+    "description": "심팡의 API 명세서 입니다!",
     "version": "1.0.0"
   },
   "servers": [
@@ -12,8 +12,32 @@
   ],
   "tags": [
     {
+      "name": "Content",
+      "description": "Content API"
+    },
+    {
       "name": "Rusult",
-      "description": "result입니다"
+      "description": "Rusult API"
+    },
+    {
+      "name": "Kakao OAuth",
+      "description": "Oauth API"
+    },
+    {
+      "name": "like",
+      "description": "like API"
+    },
+    {
+      "name": "Share",
+      "description": "Share API"
+    },
+    {
+      "name": "Comment",
+      "description": "Comment API"
+    },
+    {
+      "name": "Image upload",
+      "description": "Image upload API"
     }
   ],
   "paths": {
@@ -35,11 +59,8 @@
     },
     "/api/v1/contents/": {
       "post": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "test",
-        "description": "test",
+        "tags": ["Content"],
+        "description": "",
         "responses": {
           "201": {
             "description": "Created"
@@ -52,17 +73,31 @@
           }
         },
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/someSchema"
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "example": "any"
+                  },
+                  "questions": {
+                    "example": "any"
+                  },
+                  "results": {
+                    "example": "any"
+                  },
+                  "contentData": {
+                    "example": "any"
+                  }
+                }
               }
             }
           }
         }
       },
       "get": {
+        "tags": ["Content"],
         "description": "",
         "parameters": [
           {
@@ -99,6 +134,7 @@
     },
     "/api/v1/contents/random": {
       "get": {
+        "tags": ["Content"],
         "description": "",
         "responses": {
           "200": {
@@ -118,6 +154,7 @@
     },
     "/api/v1/contents/{contentId}": {
       "get": {
+        "tags": ["Content"],
         "description": "",
         "parameters": [
           {
@@ -142,6 +179,7 @@
         }
       },
       "patch": {
+        "tags": ["Content"],
         "description": "",
         "parameters": [
           {
@@ -163,6 +201,7 @@
         }
       },
       "delete": {
+        "tags": ["Content"],
         "description": "",
         "parameters": [
           {
@@ -186,6 +225,7 @@
     },
     "/api/v1/results/{contentId}": {
       "post": {
+        "tags": ["Rusult"],
         "description": "",
         "parameters": [
           {
@@ -223,6 +263,7 @@
     },
     "/api/v1/results/{resultId}": {
       "get": {
+        "tags": ["Rusult"],
         "description": "",
         "parameters": [
           {
@@ -252,6 +293,7 @@
     },
     "/api/v1/comments/{contentId}": {
       "post": {
+        "tags": ["Comment"],
         "description": "",
         "parameters": [
           {
@@ -287,6 +329,7 @@
         }
       },
       "get": {
+        "tags": ["Comment"],
         "description": "",
         "parameters": [
           {
@@ -331,6 +374,7 @@
     },
     "/api/v1/comments/{commentId}": {
       "patch": {
+        "tags": ["Comment"],
         "description": "",
         "parameters": [
           {
@@ -366,6 +410,7 @@
         }
       },
       "delete": {
+        "tags": ["Comment"],
         "description": "",
         "parameters": [
           {
@@ -398,6 +443,7 @@
     },
     "/api/v1/likes/{contentId}": {
       "post": {
+        "tags": ["like"],
         "description": "",
         "parameters": [
           {
@@ -425,6 +471,7 @@
         }
       },
       "get": {
+        "tags": ["like"],
         "description": "",
         "parameters": [
           {
@@ -449,6 +496,7 @@
         }
       },
       "delete": {
+        "tags": ["like"],
         "description": "",
         "parameters": [
           {
@@ -478,6 +526,7 @@
     },
     "/api/v1/shares/{contentId}": {
       "post": {
+        "tags": ["Share"],
         "description": "",
         "parameters": [
           {
@@ -508,6 +557,7 @@
     },
     "/api/oauth2/kakao/login": {
       "get": {
+        "tags": ["Kakao OAuth"],
         "description": "",
         "parameters": [
           {
@@ -530,6 +580,7 @@
     },
     "/api/oauth2/kakao/logout": {
       "get": {
+        "tags": ["Kakao OAuth"],
         "description": "",
         "responses": {
           "200": {
@@ -546,6 +597,7 @@
     },
     "/api/v1/upload/": {
       "post": {
+        "tags": ["Image upload"],
         "description": "",
         "responses": {
           "200": {
@@ -562,18 +614,89 @@
     }
   },
   "components": {
-    "schemas": {
-      "someSchema": {
-        "$name": "John Doe",
-        "$age": 29,
-        "about": ""
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     },
-    "securitySchemes": {
-      "type": "http",
-      "scheme": "bearer",
-      "in": "header",
-      "bearerFormat": "JWT"
+    "schemas": {
+      "content": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "제목"
+          },
+          "content": {
+            "type": "string",
+            "example": "내용"
+          },
+          "imageUrls": {
+            "type": "array",
+            "example": ["image.url"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "number",
+                  "example": 1
+                },
+                "question": {
+                  "type": "string",
+                  "example": "질문"
+                },
+                "answers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "score": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "example": "대답"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "INTP"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "INTP입니다"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "착해요"
+                }
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "example": "content type"
+          }
+        }
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ router.post(
   roleChecker(['Creator', 'Admin']),
   upload.single('imageUrl'),
   async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Image upload']
     try {
       const file = req.file;
       if (!file) {
