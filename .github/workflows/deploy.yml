@@ -24,13 +24,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t simpang:latest .
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "$VULTR_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
 
       - name: Copy Docker image to Vultr server
         run: scp -o StrictHostKeyChecking=no ./Dockerfile ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
