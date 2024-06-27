@@ -19,7 +19,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: 20.x
+          cache: npm
 
       - name: Build Docker image
         run: |
@@ -27,7 +28,7 @@ jobs:
           docker save simpang:latest > simpang.tar
 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
 
