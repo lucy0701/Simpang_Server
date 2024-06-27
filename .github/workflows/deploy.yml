@@ -1,0 +1,34 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t simpang:latest .
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
+
+      - name: Copy Docker image to Vultr server
+        run: scp -o StrictHostKeyChecking=no ./Dockerfile ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
+
+      - name: SSH into Vultr server and deploy Docker container
+        run: |
+          ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} << 'EOF'
+            docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
+            docker stop simpang || true
+            docker rm simpang || true
+            docker run -d --name simpang -p 80:80 simpang:latest
+          EOF
