@@ -24,6 +24,7 @@ router.post(
   roleChecker(['Creator', 'Admin']),
   upload.fields([{ name: 'imageUrls' }]),
   async (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const user = req.user;
 
@@ -75,6 +76,7 @@ router.get(
   '/',
   validatePagination,
   async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { size, page, sort } = req.query;
       const {
@@ -102,6 +104,7 @@ router.get(
 );
 
 router.get('/random', async (_, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Content']
   try {
     const randomContent = await ContentModel.aggregate([{ $sample: { size: 1 } }]);
 
@@ -116,6 +119,7 @@ router.get('/random', async (_, res: Response, next: NextFunction) => {
 });
 
 router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Content']
   try {
     const { contentId } = req.params;
 
@@ -132,10 +136,11 @@ router.patch(
   '/:contentId',
   loginChecker,
   roleChecker(['Creator', 'Admin']),
-  async (req: Request<{ contentId: string }, {}, Partial<IContent>>, res: Response, next: NextFunction) => {
+  async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { contentId } = req.params;
-      const updateData = req.body;
+      const { results, ...contentData } = req.body;
       const user = req.user;
 
       if (user?.role === 'Creator') {
@@ -143,7 +148,18 @@ router.patch(
         if (!creator) return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
       }
 
-      const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, updateData, {
+      await Promise.all(
+        results.map(async (updateData: IResult) => {
+          const updatedResult = await ResultModel.findOneAndUpdate({ result: updateData.result }, updateData, {
+            new: true,
+            upsert: true,
+            runValidators: true,
+          }).exec();
+          return updatedResult;
+        }),
+      );
+
+      const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, contentData, {
         new: true,
         runValidators: true,
       }).exec();
@@ -164,6 +180,7 @@ router.delete(
   loginChecker,
   roleChecker(['Creator', 'Admin']),
   async (req: Request<{ contentId: string }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Content']
     try {
       const { contentId } = req.params;
       const user = req.user;

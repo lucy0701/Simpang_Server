@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
 
 import { FE_URL, MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares';
@@ -10,6 +11,8 @@ import kakao from './routes/kakao';
 import likes from './routes/likes';
 import results from './routes/results';
 import shares from './routes/shares';
+import uploade from './routes/uploade';
+import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 
 const app = express();
 
@@ -35,7 +38,11 @@ app.use('/api/v1/results', results);
 app.use('/api/v1/comments', comments);
 app.use('/api/v1/likes', likes);
 app.use('/api/v1/shares', shares);
+
 app.use('/api/oauth2/kakao', kakao);
+app.use('/api/v1/upload', uploade);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile, { explorer: true }));
 
 app.get('/', (_, res) => {
   res.send('Hello World!');

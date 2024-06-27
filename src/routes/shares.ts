@@ -13,6 +13,7 @@ router.post(
   '/:contentId',
   tokenChecker,
   async (req: Request<{ contentId: string }, {}, {}, { type: ShareType }>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Share']
     try {
       const { contentId } = req.params;
       const { type } = req.query;

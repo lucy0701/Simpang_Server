@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "**/*.ts"],
+  "include": ["src/**/*", "**/*.ts", "src/swagger/swagger.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "esm": true,
@@ -9,9 +9,10 @@
   "compilerOptions": {
     "strict": true,
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "preserve",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,

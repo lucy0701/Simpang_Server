@@ -13,6 +13,7 @@ import UserModel from '../schemas/User';
 const router = express.Router();
 
 router.get('/login', async (req: Request<{}, {}, {}, { code: string }>, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Kakao OAuth']
   try {
     const code = req.query.code;
 
@@ -87,6 +88,7 @@ router.get('/login', async (req: Request<{}, {}, {}, { code: string }>, res: Res
 });
 
 router.get('/logout', loginChecker, async (req: Request, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Kakao OAuth']
   try {
     const user = req.user;
 

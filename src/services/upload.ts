@@ -3,7 +3,7 @@ import FormData from 'form-data';
 
 import { IMAGE_BB_API_KEY } from '../constants';
 
-export const uploadToImageBB = async (imageFile: Express.Multer.File) => {
+export const uploadToImageBB = async (imageFile: Express.Multer.File): Promise<string> => {
   const data = new FormData();
   data.append('image', imageFile.buffer.toString('base64'));
   data.append('key', IMAGE_BB_API_KEY);
