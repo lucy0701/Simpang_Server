@@ -21,6 +21,11 @@ jobs:
           node-version: '20.x'
           cache: npm
 
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
+
       - name: Build Docker image
         run: |
           docker build -t simpang:latest .
