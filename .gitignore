@@ -167,7 +167,7 @@ dist
 
 ### Node Patch ###
 # Serverless Webpack directories
-.webpack/
+.webpack/n
 
 # Optional stylelint cache
 
