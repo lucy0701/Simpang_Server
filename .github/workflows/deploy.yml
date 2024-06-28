@@ -51,7 +51,7 @@ jobs:
           docker save simpang:latest > simpang.tar
 
       - name: Copy Docker image to Vultr server
-        run: scp -i ${{ secrets.VULTR_SSH_KEY }} -r ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+        run: scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
 
       - name: SSH into Vultr server and deploy Docker container
         run: |
