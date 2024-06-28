@@ -61,3 +61,12 @@ jobs:
             docker rm simpang || true
             docker run -d --name simpang -p 8080:80 simpang:latest
           EOF
+          
+      - name: Post job cleanup
+        if: ${{ failure() }}
+        run: |
+          docker rmi simpang:latest
+          docker image prune -f
+          ssh-agent -k
+          unset SSH_AUTH_SOCK
+          unset SSH_AGENT_PID
