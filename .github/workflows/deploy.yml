@@ -67,6 +67,8 @@ jobs:
       - name: Post job cleanup
         if: ${{ failure() }}
         run: |
+          ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} 'docker rmi simpang:latest'
+          ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} 'docker image prune -f'
           docker rmi simpang:latest
           docker image prune -f
           ssh-agent -k
