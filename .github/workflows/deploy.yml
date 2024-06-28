@@ -9,6 +9,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      PORT: ${{secrets.PORT}}
+      MONGODB_URI: ${{secrets.MONGODB_URI}}
+      BE_URL: ${{secrets.BE_URL}}
+      FE_URL: ${{secrets.FE_URL}}
+      IMAGE_BB_API_KEY: ${{secrets.IMAGE_BB_API_KEY}}
+      REST_API_KEY: ${{secrets.REST_API_KEY}}
+      KAKAO_APP_KEY: ${{secrets.KAKAO_APP_KEY}}
+      CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
