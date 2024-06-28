@@ -15,6 +15,7 @@ import uploade from './routes/uploade';
 import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 
 const app = express();
+const hostname = '0.0.0.0';
 
 const corsOptions = {
   origin: FE_URL,
@@ -48,8 +49,8 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at ${port}`);
+app.listen(PORT, hostname, () => {
+  console.log(`Server running at ${PORT}`);
 });
 
 export default app;
