@@ -64,12 +64,3 @@ jobs:
             docker run -d --name simpang -p 8080:80 simpang:latest
             docker image prune -f
           EOF
-          
-      - name: Post job cleanup
-        if: ${{ failure() }}
-        run: |
-          ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} 'docker rmi simpang:latest'
-          ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} 'docker image prune -f'
-          ssh-agent -k
-          unset SSH_AUTH_SOCK
-          unset SSH_AGENT_PID
