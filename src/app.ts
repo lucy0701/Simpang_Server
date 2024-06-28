@@ -16,8 +16,6 @@ import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 
 const app = express();
 
-const hostname = '0.0.0.0'; 
-
 const corsOptions = {
   origin: FE_URL,
   exposedHeaders: ['Authorization'],
@@ -50,8 +48,8 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.listen(PORT,hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(PORT, () => {
+  console.log(`Server running at ${port}`);
 });
 
 export default app;
