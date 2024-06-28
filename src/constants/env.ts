@@ -6,6 +6,7 @@ export const BE_URL = process.env.BE_URL as string;
 export const FE_URL = process.env.FE_URL as string;
 export const PORT = parseInt(process.env.PORT as string);
 export const MONGODB_URI = process.env.MONGODB_URI as string;
+export const VULTR_HOST = process.env.VULTR_HOST as string;
 
 export const IMAGE_BB_API_KEY = process.env.IMAGE_BB_API_KEY as string;
 
