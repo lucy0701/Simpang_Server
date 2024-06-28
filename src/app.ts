@@ -3,7 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 
-import { FE_URL, MONGODB_URI, PORT, VULTR_HOST } from './constants';
+import { FE_URL, MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares';
 import comments from './routes/comments';
 import contents from './routes/contents';
@@ -15,6 +15,8 @@ import uploade from './routes/uploade';
 import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 
 const app = express();
+
+const hostname = '0.0.0.0'; 
 
 const corsOptions = {
   origin: FE_URL,
@@ -48,7 +50,7 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.listen(PORT, VULTR_HOST, () => {
+app.listen(PORT,hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
