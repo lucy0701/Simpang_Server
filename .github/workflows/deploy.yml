@@ -59,5 +59,5 @@ jobs:
             docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
             docker stop simpang || true
             docker rm simpang || true
-            docker run -d --name simpang -p 80:80 simpang:latest
+            docker run -d --name simpang -p 8080:80 simpang:latest
           EOF
