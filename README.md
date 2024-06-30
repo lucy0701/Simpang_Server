@@ -19,3 +19,7 @@ URL : (도메인 구매 후 공개)
     - Docker
 - Server
     - vultr
+
+
+** 06.29 ~ Client 개발 중
+https://github.com/lucy0701/Simpang_Client.git
