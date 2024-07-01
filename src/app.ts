@@ -18,6 +18,7 @@ const app = express();
 
 const corsOptions = {
   origin: FE_URL,
+  credentials: true,
   exposedHeaders: ['Authorization'],
   allowedHeaders: ['Authorization', 'Content-Type'],
 };
