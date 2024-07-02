@@ -64,7 +64,7 @@ router.get(
         totalCount,
         totalPage,
         currentPage: pageNum,
-        comments,
+        data: comments,
       });
     } catch (error) {
       next(error);

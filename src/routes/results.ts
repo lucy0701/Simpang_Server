@@ -2,11 +2,13 @@ import express, { NextFunction, Request, Response } from 'express';
 
 import { STATUS_MESSAGES } from '../constants';
 import { IContent, IResult } from '../interfaces';
+import { PaginationOptions } from '../types';
 
-import { tokenChecker } from '../middlewares';
+import { loginChecker, tokenChecker, validatePagination } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import ResultModel from '../schemas/Result';
 import UserResultModel from '../schemas/UserResult';
+import { getPaginatedDocuments } from '../utils';
 
 const router = express.Router();
 
@@ -95,5 +97,35 @@ router.get('/:resultId', async (req: Request<{ resultId: string }>, res: Respons
     next(error);
   }
 });
+
+router.get(
+  '/:contentId',
+  loginChecker,
+  validatePagination,
+  async (req: Request<{ contentId: string }, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
+    // #swagger.tags = ['Rusult']
+    try {
+      const { contentId } = req.params;
+      const user = req.user;
+      const { size, page, sort } = req.query;
+
+      const {
+        totalCount,
+        totalPage,
+        documents: results,
+        pageNum,
+      } = await getPaginatedDocuments(ResultModel, { contentId, userId: user!._id }, sort || 'desc', page, size);
+
+      res.status(200).json({
+        totalCount,
+        totalPage,
+        currentPage: pageNum,
+        data: results,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export default router;
