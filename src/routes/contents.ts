@@ -95,7 +95,7 @@ router.get(
         totalCount,
         totalPage,
         currentPage: pageNum,
-        contents: filteredContent,
+        data: filteredContent,
       });
     } catch (error) {
       next(error);
