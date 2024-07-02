@@ -29,7 +29,7 @@ router.post(
       const user = req.user;
 
       if (req.body.type === 'MBTI') {
-        if (req.body.questions.length !== 12 || req.body.results.length) {
+        if (req.body.questions.length !== 12 || req.body.results.length !== 16) {
           return res.status(400).json({
             message: STATUS_MESSAGES.BAD_REQUEST,
           });
@@ -87,7 +87,7 @@ router.get(
       } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
 
       const filteredContent: Partial<IContent>[] = contents.map((content) => {
-        const { questions, results, ...filteredContent } = content.toObject();
+        const { questions, results, updatedAt, ...filteredContent } = content.toObject();
         return filteredContent;
       });
 
