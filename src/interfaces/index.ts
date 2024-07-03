@@ -19,7 +19,7 @@ export interface IShare extends Omit<IBase, 'userId'> {
 }
 
 export interface IUserResult extends IBase {
-  resultId: mongoose.Types.ObjectId;
+  results: mongoose.Types.ObjectId;
 }
 
 export interface IPayload extends JwtPayload {
