@@ -120,7 +120,7 @@ router.get(
         totalPage,
         documents: results,
         pageNum,
-      } = await getPaginatedDocuments(UserResultModel, { contentId, userId: user!._id }, sort || 'desc', page, size);
+      } = await getPaginatedDocuments(UserResultModel, { contentId, userId: user!.sub }, sort || 'desc', page, size);
 
       res.status(200).json({
         totalCount,

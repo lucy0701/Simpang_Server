@@ -46,7 +46,7 @@ router.post(
       const newContent = await new ContentModel<IContent>({
         imageUrl: imageUrls[0],
         questions: JSON.parse(questions),
-        creator: user?._id,
+        creator: user?.sub,
         ...contentData,
       }).save();
 
