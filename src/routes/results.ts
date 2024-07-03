@@ -58,20 +58,26 @@ router.post(
         return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      if (user) {
-        const findResult = await ResultModel.find({ userId: user.sub }).countDocuments();
-        if (findResult >= 50) {
-          const oldestResult = await ResultModel.findOne({ userId: user.sub }).sort({ createdAt: 1 }).exec();
+      if (user && user.sub) {
+        try {
+          const findResult = await UserResultModel.find({ userId: user.sub }).countDocuments();
 
-          if (oldestResult) {
-            await ResultModel.findByIdAndDelete(oldestResult._id).exec();
+          if (findResult >= 50) {
+            const oldestResult = await UserResultModel.findOne({ userId: user.sub }).sort({ createdAt: 1 }).exec();
+
+            if (oldestResult) {
+              await UserResultModel.findByIdAndDelete(oldestResult._id).exec();
+            }
           }
+
+          await UserResultModel.create({
+            contentId: content._id,
+            resultId: resultData._id,
+            userId: user.sub,
+          });
+        } catch (error) {
+          return next(error);
         }
-        await UserResultModel.create({
-          contentId: content._id,
-          resultId: resultData._id,
-          userId: user._id,
-        });
       }
 
       res.status(200).json(resultData);
@@ -114,7 +120,7 @@ router.get(
         totalPage,
         documents: results,
         pageNum,
-      } = await getPaginatedDocuments(ResultModel, { contentId, userId: user!._id }, sort || 'desc', page, size);
+      } = await getPaginatedDocuments(UserResultModel, { contentId, userId: user!._id }, sort || 'desc', page, size);
 
       res.status(200).json({
         totalCount,

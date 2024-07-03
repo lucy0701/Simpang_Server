@@ -6,7 +6,7 @@ const UserResultSchema = new Schema<IUserResult>(
   {
     contentId: { type: Schema.Types.ObjectId, required: true, ref: 'Content' },
     resultId: { type: Schema.Types.ObjectId, required: true, ref: 'Result' },
-    userId: { type: Schema.Types.ObjectId, required: true, ref: 'Member' },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   },
   { timestamps: true },
 );
