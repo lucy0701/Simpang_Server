@@ -29,7 +29,7 @@ router.post(
 
       await CommentModel.create({
         contentId,
-        userId,
+        user: userId,
         text,
       });
 
@@ -60,11 +60,13 @@ router.get(
         pageNum,
       } = await getPaginatedDocuments(CommentModel, { contentId }, sort || 'desc', page, size);
 
+      const data = await CommentModel.populate(comments, { path: 'user' });
+
       res.status(200).json({
         totalCount,
         totalPage,
         currentPage: pageNum,
-        data: comments,
+        data,
       });
     } catch (error) {
       next(error);
@@ -80,6 +82,8 @@ router.patch(
     try {
       const { commentId } = req.params;
       const { text } = req.body;
+
+      if (!text) return res.status(201).json({ message: '변경사항 없음' });
 
       const updateComment = await CommentModel.findByIdAndUpdate<IComment>(
         commentId,
@@ -115,7 +119,7 @@ router.delete(
         return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
 
-      if (user?.role === 'Admin' || user?.sub === comment.userId.toString()) {
+      if (user?.role === 'Admin' || user?.sub === comment.user.toString()) {
         const deleteComment = await CommentModel.findByIdAndDelete(commentId).exec();
 
         if (!deleteComment) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });

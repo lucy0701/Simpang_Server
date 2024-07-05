@@ -122,7 +122,6 @@ router.get(
       } = await getPaginatedDocuments(UserResultModel, { userId: user!.sub }, sort || 'desc', page, size);
 
       const data = await UserResultModel.populate(userResults, { path: 'results' });
-      console.log('PSJ: data', data);
 
       res.status(200).json({
         totalCount,

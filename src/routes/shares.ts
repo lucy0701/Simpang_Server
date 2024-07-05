@@ -22,7 +22,7 @@ router.post(
       const content = await ContentModel.findById(contentId).exec();
       if (!content) return res.status(404).json({ message: 'Content not found' });
 
-      if (type === 'Link' || (type === 'Kakao' && user)) {
+      if (type === 'Link' || type === 'Kakao') {
         await ShareModel.create({
           contentId,
           userId: user?.sub,
@@ -30,8 +30,6 @@ router.post(
         });
 
         return res.status(200).json({ message: STATUS_MESSAGES.SUCCESS });
-      } else if (type === 'Kakao' && !user) {
-        return res.status(401).json({ message: STATUS_MESSAGES.NOT_FOUND });
       } else {
         return res.status(400).json({ message: STATUS_MESSAGES.BAD_REQUEST });
       }
