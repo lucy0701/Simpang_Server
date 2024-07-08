@@ -103,10 +103,17 @@ router.get(
   },
 );
 
-router.get('/random', async (_, res: Response, next: NextFunction) => {
+router.get('/random', async (req: Request<{}, {}, {}, { size: string }>, res: Response, next: NextFunction) => {
   // #swagger.tags = ['Content']
+
   try {
-    const randomContent = await ContentModel.aggregate([{ $sample: { size: 1 } }]);
+    const size = Number(req.query.size);
+
+    if (isNaN(size)) {
+      return res.status(400).json({ message: 'Invalid size parameter' });
+    }
+
+    const randomContent = await ContentModel.aggregate([{ $sample: { size } }]);
 
     if (!randomContent || randomContent.length === 0) {
       return res.status(404).json({ message: 'Results not found' });
