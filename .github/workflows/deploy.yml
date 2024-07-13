@@ -40,11 +40,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
 
-      - name: Build Docker images and create Docker Compose file
+      - name: Build Docker images
         run: |
-          docker-compose build
-          docker save simpang:latest > simpang.tar
-          docker save nginx:latest > nginx.tar
+          docker build -t simpang:latest -f Dockerfile .
+          docker pull nginx:latest
+
+      - name: Save Docker images
+        run: |
+          docker save simpang:latest -o simpang.tar
+          docker save nginx:latest -o nginx.tar
 
       - name: Copy Docker image to Vultr server
         run: | 
