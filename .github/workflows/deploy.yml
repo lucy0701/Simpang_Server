@@ -54,8 +54,7 @@ jobs:
         run: | 
           scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
           scp -o StrictHostKeyChecking=no ./nginx.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
-          scp -o StrictHostKeyChecking=no ./nginx.conf ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/
 
       - name: SSH into Vultr server and deploy Docker container
         run: |
