@@ -10,19 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PORT: ${{secrets.PORT}}
-      MONGODB_URI: ${{secrets.MONGODB_URI}}
-      BE_URL: ${{secrets.BE_URL}}
-      FE_URL: ${{secrets.FE_URL}}
-      IMAGE_BB_API_KEY: ${{secrets.IMAGE_BB_API_KEY}}
-      REST_API_KEY: ${{secrets.REST_API_KEY}}
-      KAKAO_APP_KEY: ${{secrets.KAKAO_APP_KEY}}
-      CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-      SECRET_KEY: ${{secrets.SECRET_KEY}}
-      VULTR_HOST: ${{secrets.VULTR_HOST}}
-      SSL_CERT_PATH: ${{secrets.SSL_CERT_PATH}}
-      SSL_KEY_PATH: ${{secrets.SSL_KEY_PATH}}
-      SSL_FULL_CERT_PATH: ${{secrets.SSL_FULL_CERT_PATH}}
+      PORT: ${{ secrets.PORT }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      BE_URL: ${{ secrets.BE_URL }}
+      FE_URL: ${{ secrets.FE_URL }}
+      IMAGE_BB_API_KEY: ${{ secrets.IMAGE_BB_API_KEY }}
+      REST_API_KEY: ${{ secrets.REST_API_KEY }}
+      KAKAO_APP_KEY: ${{ secrets.KAKAO_APP_KEY }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      VULTR_HOST: ${{ secrets.VULTR_HOST }}
 
     steps:
       - name: Checkout code
@@ -40,23 +37,30 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
 
-      - name: Build and Save Docker images
+      - name: Build Docker image
         run: |
-          docker build -t simpang:latest -f Dockerfile .
+          docker build --build-arg PORT=${{ secrets.PORT }} \
+                       --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
+                       --build-arg BE_URL=${{ secrets.BE_URL }} \
+                       --build-arg FE_URL=${{ secrets.FE_URL }} \
+                       --build-arg IMAGE_BB_API_KEY=${{ secrets.IMAGE_BB_API_KEY }} \
+                       --build-arg REST_API_KEY=${{ secrets.REST_API_KEY }} \
+                       --build-arg KAKAO_APP_KEY=${{ secrets.KAKAO_APP_KEY }} \
+                       --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
+                       --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
+                       --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
+                       -t simpang:latest .
           docker save simpang:latest -o simpang.tar
 
       - name: Copy Docker image to Vultr server
-        run: |
-          scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+        run: scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
 
       - name: SSH into Vultr server and deploy Docker container
         run: |
           ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} << 'EOF'
             docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
-            cd /home/${{ secrets.VULTR_USERNAME }}/docker-images/
-            docker-compose down || true
-            docker-compose pull
-            docker-compose up -d
+            docker stop simpang || true
+            docker rm simpang || true
+            docker run -d --name simpang -p 8080:${{ secrets.PORT }} simpang:latest
             docker image prune -f
           EOF
