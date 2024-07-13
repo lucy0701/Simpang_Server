@@ -8,18 +8,18 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:${{secrets.PORT}}"
+      - "8080:${{ secrets.PORT }}"
     environment:
-      PORT: ${{secrets.PORT}}
-      MONGODB_URI: ${{secrets.MONGODB_URI}}
-      BE_URL: ${{secrets.BE_URL}}
-      FE_URL: ${{secrets.FE_URL}}
-      IMAGE_BB_API_KEY: ${{secrets.IMAGE_BB_API_KEY}}
-      REST_API_KEY: ${{secrets.REST_API_KEY}}
-      KAKAO_APP_KEY: ${{secrets.KAKAO_APP_KEY}}
-      CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-      SECRET_KEY: ${{secrets.SECRET_KEY}}
-      VULTR_HOST: ${{secrets.VULTR_HOST}}
-      SSL_CERT_PATH: ${{secrets.SSL_CERT_PATH}}
-      SSL_KEY_PATH: ${{secrets.SSL_KEY_PATH}}
-      SSL_FULL_CERT_PATH: ${{secrets.SSL_FULL_CERT_PATH}}
+      PORT: ${{ secrets.PORT }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      BE_URL: ${{ secrets.BE_URL }}
+      FE_URL: ${{ secrets.FE_URL }}
+      IMAGE_BB_API_KEY: ${{ secrets.IMAGE_BB_API_KEY }}
+      REST_API_KEY: ${{ secrets.REST_API_KEY }}
+      KAKAO_APP_KEY: ${{ secrets.KAKAO_APP_KEY }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      VULTR_HOST: ${{ secrets.VULTR_HOST }}
+      SSL_CERT_PATH: ${{ secrets.SSL_CERT_PATH }}
+      SSL_KEY_PATH: ${{ secrets.SSL_KEY_PATH }}
+      SSL_FULL_CERT_PATH: ${{ secrets.SSL_FULL_CERT_PATH }}
