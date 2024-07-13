@@ -20,6 +20,8 @@ jobs:
       CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
       SECRET_KEY: ${{secrets.SECRET_KEY}}
       VULTR_HOST: ${{secrets.VULTR_HOST}}
+      SSL_CERT_PATH: ${{secrets.SSL_CERT_PATH}}
+      SSL_KEY_PATH: ${{secrets.SSL_KEY_PATH}}
 
     steps:
       - name: Checkout code
@@ -49,6 +51,8 @@ jobs:
                        --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
                        --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
                        --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
+                       --build-arg SSL_CERT_PATH=${{ secrets.SSL_CERT_PATH }} \
+                       --build-arg SSL_KEY_PATH=${{ secrets.SSL_KEY_PATH }} \
                        -t simpang:latest .
           docker save simpang:latest > simpang.tar
 
