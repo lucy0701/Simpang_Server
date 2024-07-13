@@ -55,6 +55,8 @@ jobs:
           ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} << 'EOF'
             docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
             cd /home/${{ secrets.VULTR_USERNAME }}/docker-images/
+            docker-compose down || true
+            docker-compose pull
             docker-compose up -d
             docker image prune -f
           EOF
