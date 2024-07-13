@@ -8,6 +8,7 @@ export const PORT = parseInt(process.env.PORT as string);
 
 export const SSL_CERT_PATH = process.env.SSL_CERT_PATH as string;
 export const SSL_KEY_PATH = process.env.SSL_KEY_PATH as string;
+export const SSL_FULL_CERT_PATH = process.env.SSL_FULL_CERT_PATH as string;
 
 export const MONGODB_URI = process.env.MONGODB_URI as string;
 export const VULTR_HOST = process.env.VULTR_HOST as string;

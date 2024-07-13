@@ -5,7 +5,7 @@ import https from 'https';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 
-import { FE_URL, MONGODB_URI, PORT, SSL_CERT_PATH, SSL_KEY_PATH } from './constants';
+import { FE_URL, MONGODB_URI, PORT, SSL_CERT_PATH, SSL_FULL_CERT_PATH, SSL_KEY_PATH } from './constants';
 import { errorHandler } from './middlewares';
 import comments from './routes/comments';
 import contents from './routes/contents';
@@ -51,13 +51,18 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-const serverOptions = {
-  key: fs.readFileSync(SSL_KEY_PATH),
-  cert: fs.readFileSync(SSL_CERT_PATH),
-};
+try {
+  const serverOptions = {
+    ca: fs.readFileSync(SSL_FULL_CERT_PATH),
+    key: fs.readFileSync(SSL_KEY_PATH),
+    cert: fs.readFileSync(SSL_CERT_PATH),
+  };
 
-https.createServer(serverOptions, app).listen(PORT, () => {
-  console.log(`Server running at ${PORT}`);
-});
+  https.createServer(serverOptions, app).listen(PORT, () => {
+    console.log(`Server running at ${PORT}`);
+  });
+} catch (error) {
+  console.error('HTTPS 오류 발생', error);
+}
 
 export default app;

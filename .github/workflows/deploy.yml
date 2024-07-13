@@ -22,6 +22,7 @@ jobs:
       VULTR_HOST: ${{secrets.VULTR_HOST}}
       SSL_CERT_PATH: ${{secrets.SSL_CERT_PATH}}
       SSL_KEY_PATH: ${{secrets.SSL_KEY_PATH}}
+      SSL_FULL_CERT_PATH: ${{secrets.SSL_FULL_CERT_PATH}}
 
     steps:
       - name: Checkout code
@@ -53,6 +54,7 @@ jobs:
                        --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
                        --build-arg SSL_CERT_PATH=${{ secrets.SSL_CERT_PATH }} \
                        --build-arg SSL_KEY_PATH=${{ secrets.SSL_KEY_PATH }} \
+                       --build-arg SSL_FULL_CERT_PATH=${{ secrets.SSL_FULL_CERT_PATH }} \
                        -t simpang:latest .
           docker save simpang:latest > simpang.tar
 
