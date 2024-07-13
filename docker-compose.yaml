@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:${PORT}"
+    environment:
+      PORT: ${PORT}
+      MONGODB_URI: ${MONGODB_URI}
+      BE_URL: ${BE_URL}
+      FE_URL: ${FE_URL}
+      IMAGE_BB_API_KEY: ${IMAGE_BB_API_KEY}
+      REST_API_KEY: ${REST_API_KEY}
+      KAKAO_APP_KEY: ${KAKAO_APP_KEY}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      SECRET_KEY: ${SECRET_KEY}
+      VULTR_HOST: ${VULTR_HOST}
+    volumes:
+      - ${SSL_FULL_CERT_PATH}:${SSL_FULL_CERT_PATH}:ro
+      - ${SSL_KEY_PATH}:${SSL_KEY_PATH}:ro
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app

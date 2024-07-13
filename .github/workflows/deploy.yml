@@ -40,36 +40,24 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VULTR_SSH_KEY }}
 
-      - name: Build Docker image
+      - name: Build Docker images and create Docker Compose file
         run: |
-          docker build --build-arg PORT=${{ secrets.PORT }} \
-                       --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
-                       --build-arg BE_URL=${{ secrets.BE_URL }} \
-                       --build-arg FE_URL=${{ secrets.FE_URL }} \
-                       --build-arg IMAGE_BB_API_KEY=${{ secrets.IMAGE_BB_API_KEY }} \
-                       --build-arg REST_API_KEY=${{ secrets.REST_API_KEY }} \
-                       --build-arg KAKAO_APP_KEY=${{ secrets.KAKAO_APP_KEY }} \
-                       --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
-                       --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
-                       --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
-                       --build-arg SSL_CERT_PATH=${{ secrets.SSL_CERT_PATH }} \
-                       --build-arg SSL_KEY_PATH=${{ secrets.SSL_KEY_PATH }} \
-                       --build-arg SSL_FULL_CERT_PATH=${{ secrets.SSL_FULL_CERT_PATH }} \
-                       -t simpang:latest .
+          docker-compose build
           docker save simpang:latest > simpang.tar
+          docker save nginx:latest > nginx.tar
 
       - name: Copy Docker image to Vultr server
-        run: scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+        run: | 
+          scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+          scp -o StrictHostKeyChecking=no ./nginx.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
+          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
 
       - name: SSH into Vultr server and deploy Docker container
         run: |
           ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} << 'EOF'
             docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
-            docker stop simpang || true
-            docker rm simpang || true
-            docker run -d --name simpang -p 8080:${{ secrets.PORT }} \
-              -v  ${{secrets.SSL_FULL_CERT_PATH}}:${{secrets.SSL_FULL_CERT_PATH}}:ro \
-              -v  ${{secrets.SSL_KEY_PATH}}:${{secrets.SSL_KEY_PATH}}:ro \
-            simpang:latest
+            docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/nginx.tar
+            cd /home/${{ secrets.VULTR_USERNAME }}/docker-images/
+            docker-compose up -d
             docker image prune -f
           EOF
