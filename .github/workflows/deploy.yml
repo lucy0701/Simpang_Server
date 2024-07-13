@@ -39,17 +39,18 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --build-arg PORT=${{ secrets.PORT }} \
-                       --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
-                       --build-arg BE_URL=${{ secrets.BE_URL }} \
-                       --build-arg FE_URL=${{ secrets.FE_URL }} \
-                       --build-arg IMAGE_BB_API_KEY=${{ secrets.IMAGE_BB_API_KEY }} \
-                       --build-arg REST_API_KEY=${{ secrets.REST_API_KEY }} \
-                       --build-arg KAKAO_APP_KEY=${{ secrets.KAKAO_APP_KEY }} \
-                       --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
-                       --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
-                       --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
-                       -t simpang:latest .
+          docker buildx build \ 
+            --build-arg PORT=${{ secrets.PORT }} \
+            --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
+            --build-arg BE_URL=${{ secrets.BE_URL }} \
+            --build-arg FE_URL=${{ secrets.FE_URL }} \
+            --build-arg IMAGE_BB_API_KEY=${{ secrets.IMAGE_BB_API_KEY }} \
+            --build-arg REST_API_KEY=${{ secrets.REST_API_KEY }} \
+            --build-arg KAKAO_APP_KEY=${{ secrets.KAKAO_APP_KEY }} \
+            --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
+            --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
+            -t simpang:latest .
           docker save simpang:latest -o simpang.tar
 
       - name: Copy Docker image to Vultr server
