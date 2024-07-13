@@ -17,7 +17,7 @@ import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 const app = express();
 
 const corsOptions = {
-  origin: FE_URL,
+  origin: [FE_URL, 'http://localhost:3000'],
   credentials: true,
   exposedHeaders: ['Authorization'],
   allowedHeaders: ['Authorization', 'Content-Type'],
@@ -46,7 +46,7 @@ app.use('/api/v1/upload', uploade);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile, { explorer: true }));
 
 app.get('/', (_, res) => {
-  res.send('Hello World!');
+  res.send('Hello Simpang! 🥰');
 });
 
 app.listen(PORT, () => {
