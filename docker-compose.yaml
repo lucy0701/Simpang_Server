@@ -10,19 +10,19 @@ services:
     ports:
       - "8080:${PORT}"
     environment:
-      - PORT: ${PORT}
-      - MONGODB_URI: ${MONGODB_URI}
-      - BE_URL: ${BE_URL}
-      - FE_URL: ${FE_URL}
-      - IMAGE_BB_API_KEY: ${IMAGE_BB_API_KEY}
-      - REST_API_KEY: ${REST_API_KEY}
-      - KAKAO_APP_KEY: ${KAKAO_APP_KEY}
-      - CLIENT_SECRET: ${CLIENT_SECRET}
-      - SECRET_KEY: ${SECRET_KEY}
-      - VULTR_HOST: ${VULTR_HOST}
-      - SSL_CERT_PATH: ${SSL_CERT_PATH}
-      - SSL_KEY_PATH: ${SSL_KEY_PATH}
-      - SSL_FULL_CERT_PATH: ${SSL_FULL_CERT_PATH}
+      - PORT=${PORT}
+      - MONGODB_URI=${MONGODB_URI}
+      - BE_URL=${BE_URL}
+      - FE_URL=${FE_URL}
+      - IMAGE_BB_API_KEY=${IMAGE_BB_API_KEY}
+      - REST_API_KEY=${REST_API_KEY}
+      - KAKAO_APP_KEY=${KAKAO_APP_KEY}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
+      - VULTR_HOST=${VULTR_HOST}
+      - SSL_CERT_PATH=${SSL_CERT_PATH}
+      - SSL_KEY_PATH=${SSL_KEY_PATH}
+      - SSL_FULL_CERT_PATH=${SSL_FULL_CERT_PATH}
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
 
