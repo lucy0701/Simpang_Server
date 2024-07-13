@@ -28,15 +28,15 @@ router.post(
     try {
       const user = req.user;
 
+      const { questions, results, ...contentData } = req.body;
+
       if (req.body.type === 'MBTI') {
-        if (req.body.questions.length !== 12 || req.body.results.length !== 16) {
+        if (JSON.parse(questions).length < 4 || JSON.parse(results).length !== 16) {
           return res.status(400).json({
             message: STATUS_MESSAGES.BAD_REQUEST,
           });
         }
       }
-
-      const { questions, results, ...contentData } = req.body;
 
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       const images = files?.['imageUrls'] || [];
