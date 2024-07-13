@@ -29,6 +29,8 @@ ENV SSL_CERT_PATH=${SSL_CERT_PATH}
 ENV SSL_KEY_PATH=${SSL_KEY_PATH}
 ENV SSL_FULL_CERT_PATH=${SSL_FULL_CERT_PATH}
 
+COPY /etc/letsencrypt/live /etc/letsencrypt/live
+
 COPY package*.json ./
 RUN npm install
 COPY . .

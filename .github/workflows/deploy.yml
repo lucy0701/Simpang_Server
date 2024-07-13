@@ -43,6 +43,7 @@ jobs:
       - name: Build Docker images
         run: |
           docker build -t simpang:latest -f Dockerfile .
+          docker build -t nginx:latest -f Dockerfile.nginx .
 
       - name: Save Docker images
         run: |
