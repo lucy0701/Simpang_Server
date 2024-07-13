@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker buildx build \ 
+          docker buildx build \
             --build-arg PORT=${{ secrets.PORT }} \
             --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
             --build-arg BE_URL=${{ secrets.BE_URL }} \
