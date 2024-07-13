@@ -23,19 +23,5 @@ services:
       - SSL_CERT_PATH=${SSL_CERT_PATH}
       - SSL_KEY_PATH=${SSL_KEY_PATH}
       - SSL_FULL_CERT_PATH=${SSL_FULL_CERT_PATH}
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-
-  nginx:
-    build:
-    context: .
-    dockerfile: Dockerfile.nginx
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "443:443"
-      - "80:80"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - app
+    # volumes:
+    #   - /etc/letsencrypt:/etc/letsencrypt:ro
