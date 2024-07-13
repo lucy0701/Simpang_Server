@@ -48,13 +48,13 @@ jobs:
       - name: Copy Docker image to Vultr server
         run: |
           scp -o StrictHostKeyChecking=no ./simpang.tar ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/
+          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }}:/home/${{ secrets.VULTR_USERNAME }}/docker-images/
 
       - name: SSH into Vultr server and deploy Docker container
         run: |
           ssh ${{ secrets.VULTR_USERNAME }}@${{ secrets.VULTR_HOST }} << 'EOF'
             docker load -i /home/${{ secrets.VULTR_USERNAME }}/docker-images/simpang.tar
-            cd /home/${{ secrets.VULTR_USERNAME }}/
+            cd /home/${{ secrets.VULTR_USERNAME }}/docker-images/
             docker-compose down || true
             docker-compose pull
             docker-compose up -d
