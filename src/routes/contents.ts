@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import multer from 'multer';
 
 import { STATUS_MESSAGES } from '../constants';
 import { IContent, IResult } from '../interfaces';
@@ -13,49 +12,40 @@ import LikeModel from '../schemas/Like';
 import ResultModel from '../schemas/Result';
 import ShareModel from '../schemas/Share';
 import UserResultModel from '../schemas/UserResult';
-import { uploadToImageBB } from '../services';
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   '/',
   loginChecker,
   roleChecker(['Creator', 'Admin']),
-  upload.fields([{ name: 'imageUrls' }]),
   async (req: Request, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Content']
     try {
       const user = req.user;
 
-      const { questions, results, ...contentData } = req.body;
+      const { results, questions, ...contents } = req.body;
 
       if (req.body.type === 'MBTI') {
-        if (JSON.parse(questions).length < 4 || JSON.parse(results).length !== 16) {
+        if (questions.length < 4 || results.length !== 16) {
           return res.status(400).json({
             message: STATUS_MESSAGES.BAD_REQUEST,
           });
         }
       }
 
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      const images = files?.['imageUrls'] || [];
-
-      const imageUrls = await Promise.all(images.map((file) => uploadToImageBB(file)));
-
       const newContent = await new ContentModel<IContent>({
-        imageUrl: imageUrls[0],
-        questions: JSON.parse(questions),
+        // imageUrl: imageUrls[0],
+        questions,
         creator: user?.sub,
-        ...contentData,
+        ...contents,
       }).save();
 
       const newResults = await Promise.all(
-        JSON.parse(results).map(async (resultData: IResult, i: number) => {
+        results.map(async (resultData: IResult) => {
           const newResult = new ResultModel({
             ...resultData,
             contentId: newContent._id,
-            imageUrl: imageUrls[i + 1],
           });
           return await newResult.save();
         }),
@@ -138,7 +128,6 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   }
 });
 
-// TODO: Result, imageUrl upload 추가
 router.patch(
   '/:contentId',
   loginChecker,
