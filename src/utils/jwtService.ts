@@ -5,8 +5,10 @@ import { SECRET_KEY } from '../constants';
 import { IPayload, IUser } from '../interfaces';
 
 export default class JwtService {
-  static createJWT = (user: IUser, accessToken: string): string =>
-    jwt.sign(
+  static createJWT = (user: IUser, accessToken: string): string => {
+    const exp = user.role === 'Admin' || user.role === 'Creator' ? '5h' : '1h';
+
+    return jwt.sign(
       {
         sub: user._id,
         role: user.role,
@@ -17,9 +19,10 @@ export default class JwtService {
       },
       SECRET_KEY,
       {
-        expiresIn: '1h',
+        expiresIn: exp,
       },
     );
+  };
 
   static extractToken = (req: Request) => {
     const authHeader = req.headers.authorization;
