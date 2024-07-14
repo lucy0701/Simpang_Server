@@ -26,7 +26,7 @@ const ContentSchema = new Schema<IContent>(
           type: Number,
           required: true,
         },
-        question: { type: String, required: true, minLength: 2, maxLength: 100 },
+        question: { type: String, required: true, minLength: 2, maxLength: 200 },
         answers: [
           {
             score: {
