@@ -50,9 +50,8 @@ jobs:
             --build-arg KAKAO_APP_KEY=${{ secrets.KAKAO_APP_KEY }} \
             --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
             --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
-            --build-arg VULTR_HOST=${{ secrets.VULTR_HOST }} \
             --build-arg FE_URL_DEV=${{ secrets.FE_URL_DEV }} \
-            --build-arg FE_URL_DEV=${{ secrets.FE_URL_LOCAL }} \
+            --build-arg FE_URL_LOCAL=${{ secrets.FE_URL_LOCAL }} \
             -t simpang:latest .
           docker save simpang:latest -o simpang.tar
 

@@ -3,7 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 
-import { FE_URL, FE_URL_LOCAL, MONGODB_URI, PORT } from './constants';
+import { FE_URL, FE_URL_DEV, FE_URL_LOCAL, MONGODB_URI, PORT } from './constants';
 import { errorHandler } from './middlewares';
 import comments from './routes/comments';
 import contents from './routes/contents';
@@ -17,7 +17,7 @@ import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 const app = express();
 
 const corsOptions = {
-  origin: [FE_URL, FE_URL_LOCAL, FE_URL_LOCAL],
+  origin: [FE_URL, FE_URL_LOCAL, FE_URL_DEV],
   credentials: true,
   exposedHeaders: ['Authorization'],
   allowedHeaders: ['Authorization', 'Content-Type'],
