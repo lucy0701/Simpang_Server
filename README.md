@@ -1,13 +1,16 @@
 ## Simpang Server
-* 시작: 24.06.18
-* 배포: 24.06.28
 
-ERD : https://www.erdcloud.com/d/rAyDBj2Wk8t2WJgC4
+__ERD__ : https://www.erdcloud.com/d/rAyDBj2Wk8t2WJgC4
 
-URL : (도메인 구매 후 공개)
+__Site__ : https://simpang.kr/
 
-### 환경 및 기술
+__Client Github__ : https://github.com/lucy0701/Simpang_Client.git
+
+---
+
+### Environment and Technology
 - DB : MongoDB (mongoose)
+- Image Cloud : Imgbb
 - Framework
     - node.js / express
 - Skill
@@ -15,11 +18,11 @@ URL : (도메인 구매 후 공개)
     - JWT
     - Swagger
     - kakao OAuth2
-    - CI/CD 
+    - CI/CD (Git Actions)
     - Docker
+    - Nginx
 - Server
-    - vultr
+    - vultr (Ubuntu)
 
 
-** 06.29 ~ Client 개발 중
-https://github.com/lucy0701/Simpang_Client.git
+
