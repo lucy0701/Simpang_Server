@@ -35,7 +35,6 @@ router.post(
       }
 
       const newContent = await new ContentModel<IContent>({
-        // imageUrl: imageUrls[0],
         questions,
         creator: user?.sub,
         ...contents,
@@ -120,9 +119,18 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   try {
     const { contentId } = req.params;
 
-    const content = await ContentModel.findById(contentId).exec();
+    const content = await ContentModel.findById(contentId).populate<{ creator: { name: string } }>('creator').exec();
 
-    res.status(200).json(content);
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+
+    const modifiedContent = {
+      ...content.toObject(),
+      creator: content.creator.name,
+    };
+
+    res.status(200).json(modifiedContent);
   } catch (error) {
     next(error);
   }

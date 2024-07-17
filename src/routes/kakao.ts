@@ -71,16 +71,10 @@ router.get(
         userId: user._id,
       });
 
-      const userInfo: Pick<IUser, 'name' | 'thumbnail' | 'createdAt'> = {
-        name: user.name,
-        thumbnail: user.thumbnail,
-        createdAt: user.createdAt,
-      };
-
       const token = JwtService.createJWT(user, accessToken);
 
       res.setHeader('Authorization', `Bearer ${token}`);
-      res.status(200).json(userInfo);
+      res.status(200).json({ message: 'Login successful' });
     } catch (error) {
       console.error('Error during Kakao OAuth process:', error);
       if (axios.isAxiosError(error)) {

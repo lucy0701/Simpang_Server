@@ -13,9 +13,6 @@ export default class JwtService {
         sub: user._id,
         role: user.role,
         accessToken,
-        name: user.name,
-        thumbnail: user.thumbnail,
-        createdAt: user.createdAt,
       },
       SECRET_KEY,
       {
