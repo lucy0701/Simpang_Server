@@ -12,6 +12,7 @@ import likes from './routes/likes';
 import results from './routes/results';
 import shares from './routes/shares';
 import uploade from './routes/uploade';
+import user from './routes/user';
 import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
 
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/v1/results', results);
 app.use('/api/v1/comments', comments);
 app.use('/api/v1/likes', likes);
 app.use('/api/v1/shares', shares);
+app.use('/api/v1/user', user);
 
 app.use('/api/oauth2/kakao', kakao);
 app.use('/api/v1/upload', uploade);
