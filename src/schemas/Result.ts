@@ -7,7 +7,7 @@ const ResultSchema = new Schema<IResult>({
   result: { type: String, required: true },
   title: { type: String, required: true, minLength: 2, maxLength: 100 },
   content: { type: String, required: true, minLength: 2, maxLength: 500 },
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String },
 });
 
 export default mongoose.model<IResult>('Result', ResultSchema);
