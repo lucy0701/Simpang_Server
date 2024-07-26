@@ -7,8 +7,12 @@ import { AuthToken, UserInfoResponse } from '../types';
 import JwtService from '../utils/jwtService';
 
 import { loginChecker } from '../middlewares';
+import CommentModel from '../schemas/Comment';
+import LikeModel from '../schemas/Like';
 import LoginModel from '../schemas/Login';
+import ShareModel from '../schemas/Share';
 import UserModel from '../schemas/User';
+import UserResultModel from '../schemas/UserResult';
 
 const router = express.Router();
 
@@ -102,6 +106,37 @@ router.get('/logout', loginChecker, async (req: Request, res: Response, next: Ne
     );
 
     res.status(200).json({ message: STATUS_MESSAGES.LOGOUT_SUCCESS });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/unlink', loginChecker, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    const userId = user?.sub;
+
+    const resUserData = await axios.post(
+      'https://kapi.kakao.com/v1/user/unlink',
+      {},
+      {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      },
+    );
+
+    await UserModel.findOneAndDelete({ kakaoId: resUserData.data.id });
+
+    await Promise.all([
+      UserResultModel.deleteMany({ userId }),
+      ShareModel.deleteMany({ userId }),
+      LikeModel.deleteMany({ userId }),
+      CommentModel.deleteMany({ user: userId }),
+    ]);
+
+    return res.status(200).json({ message: STATUS_MESSAGES.DELETED });
   } catch (error) {
     next(error);
   }
