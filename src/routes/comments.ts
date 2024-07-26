@@ -118,11 +118,20 @@ router.delete(
       if (!comment) {
         return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
       }
+      const content = await ContentModel.findById(comment.contentId).exec();
+
+      if (!content) {
+        return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
+      }
 
       if (user?.role === 'Admin' || user?.sub === comment.user.toString()) {
         const deleteComment = await CommentModel.findByIdAndDelete(commentId).exec();
 
         if (!deleteComment) return res.status(404).json({ message: STATUS_MESSAGES.NOT_FOUND });
+
+        const commentCount = await CommentModel.countDocuments({ contentId: content._id }).exec();
+        content.commentCount = commentCount;
+        await content.save();
 
         return res.status(200).json({ message: STATUS_MESSAGES.DELETED });
       } else {
