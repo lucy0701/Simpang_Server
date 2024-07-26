@@ -8,9 +8,11 @@ import { getPaginatedDocuments } from '../utils/pagination';
 import { loginChecker, roleChecker, validatePagination } from '../middlewares';
 import CommentModel from '../schemas/Comment';
 import ContentModel from '../schemas/Content';
+import CreateContentModel from '../schemas/CreateContent';
 import LikeModel from '../schemas/Like';
 import ResultModel from '../schemas/Result';
 import ShareModel from '../schemas/Share';
+import UserModel from '../schemas/User';
 import UserResultModel from '../schemas/UserResult';
 
 const router = express.Router();
@@ -23,8 +25,9 @@ router.post(
     // #swagger.tags = ['Content']
     try {
       const user = req.user;
-
       const { results, questions, ...contents } = req.body;
+
+      const userData = await UserModel.findById(user!.sub);
 
       if (req.body.type === 'MBTI') {
         if (questions.length < 4 || results.length !== 16) {
@@ -36,7 +39,7 @@ router.post(
 
       const newContent = await new ContentModel<IContent>({
         questions,
-        creator: user?.sub,
+        creator: userData?.name,
         ...contents,
       }).save();
 
@@ -49,6 +52,11 @@ router.post(
           return await newResult.save();
         }),
       );
+
+      await new CreateContentModel({
+        contentId: newContent._id,
+        userId: user?.sub,
+      }).save();
 
       newContent.results = newResults.map((results) => results._id);
 
@@ -102,7 +110,7 @@ router.get('/random', async (req: Request<{}, {}, {}, { size: string }>, res: Re
       return res.status(400).json({ message: 'Invalid size parameter' });
     }
 
-    const randomContent = await ContentModel.aggregate([{ $sample: { size } }]);
+    const randomContent: IContent[] = await ContentModel.aggregate([{ $sample: { size } }]);
 
     if (!randomContent || randomContent.length === 0) {
       return res.status(404).json({ message: 'Results not found' });
@@ -119,18 +127,15 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   try {
     const { contentId } = req.params;
 
-    const content = await ContentModel.findById(contentId).populate<{ creator: { name: string } }>('creator').exec();
+    // const content = await ContentModel.findById(contentId).populate<{ creator: { name: string } }>('creator').exec();
+    const content = await ContentModel.findById(contentId).exec();
+    console.log('PSJ: content', content);
 
     if (!content) {
       return res.status(404).json({ message: 'Content not found' });
     }
 
-    const modifiedContent = {
-      ...content.toObject(),
-      creator: content.creator.name,
-    };
-
-    res.status(200).json(modifiedContent);
+    res.status(200).json(content);
   } catch (error) {
     next(error);
   }
@@ -179,6 +184,7 @@ router.patch(
   },
 );
 
+// TODO : 실제 데이터 삭제 말고, 공개 여부로 변경 하기
 router.delete(
   '/:contentId',
   loginChecker,
@@ -201,6 +207,7 @@ router.delete(
         LikeModel.deleteMany({ contentId }),
         ResultModel.deleteMany({ contentId }),
         CommentModel.deleteMany({ contentId }),
+        CreateContentModel.deleteMany({ contentId }),
       ]);
 
       const deleteContent = await ContentModel.findByIdAndDelete(contentId).exec();
