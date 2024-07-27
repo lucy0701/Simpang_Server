@@ -71,6 +71,7 @@ router.post(
           }
 
           await UserResultModel.create({
+            contentTitle: content.title,
             contentId: content._id,
             results: resultData._id,
             userId: user.sub,
