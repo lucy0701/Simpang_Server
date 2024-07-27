@@ -22,8 +22,3 @@ export interface IPayload extends JwtPayload {
   role: Role;
   accessToken: string;
 }
-
-export interface ILoginRecord extends Document {
-  userId: mongoose.Types.ObjectId;
-  createdAt: Date;
-}

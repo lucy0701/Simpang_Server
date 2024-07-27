@@ -9,8 +9,6 @@ import JwtService from '../utils/jwtService';
 import { loginChecker } from '../middlewares';
 import CommentModel from '../schemas/Comment';
 import LikeModel from '../schemas/Like';
-import LoginModel from '../schemas/Login';
-import ShareModel from '../schemas/Share';
 import UserModel from '../schemas/User';
 import UserResultModel from '../schemas/UserResult';
 
@@ -71,10 +69,6 @@ router.get(
         });
       }
 
-      await LoginModel.create({
-        userId: user._id,
-      });
-
       const token = JwtService.createJWT(user, accessToken);
 
       res.setHeader('Authorization', `Bearer ${token}`);
@@ -128,10 +122,8 @@ router.delete('/unlink', loginChecker, async (req: Request, res: Response, next:
     );
 
     await UserModel.findOneAndDelete({ kakaoId: resUserData.data.id });
-
     await Promise.all([
       UserResultModel.deleteMany({ userId }),
-      ShareModel.deleteMany({ userId }),
       LikeModel.deleteMany({ userId }),
       CommentModel.deleteMany({ user: userId }),
     ]);

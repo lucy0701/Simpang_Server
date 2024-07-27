@@ -10,7 +10,6 @@ import contents from './routes/contents';
 import kakao from './routes/kakao';
 import likes from './routes/likes';
 import results from './routes/results';
-import shares from './routes/shares';
 import uploade from './routes/uploade';
 import user from './routes/user';
 import swaggerFile from './swagger/swagger-output.json' assert { type: 'json' };
@@ -39,7 +38,6 @@ app.use('/api/v1/contents', contents);
 app.use('/api/v1/results', results);
 app.use('/api/v1/comments', comments);
 app.use('/api/v1/likes', likes);
-app.use('/api/v1/shares', shares);
 app.use('/api/v1/user', user);
 
 app.use('/api/oauth2/kakao', kakao);
