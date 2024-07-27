@@ -11,7 +11,6 @@ import ContentModel from '../schemas/Content';
 import CreateContentModel from '../schemas/CreateContent';
 import LikeModel from '../schemas/Like';
 import ResultModel from '../schemas/Result';
-import ShareModel from '../schemas/Share';
 import UserModel from '../schemas/User';
 import UserResultModel from '../schemas/UserResult';
 
@@ -126,10 +125,7 @@ router.get('/:contentId', async (req: Request<{ contentId: string }>, res: Respo
   // #swagger.tags = ['Content']
   try {
     const { contentId } = req.params;
-
-    // const content = await ContentModel.findById(contentId).populate<{ creator: { name: string } }>('creator').exec();
     const content = await ContentModel.findById(contentId).exec();
-    console.log('PSJ: content', content);
 
     if (!content) {
       return res.status(404).json({ message: 'Content not found' });
@@ -203,7 +199,6 @@ router.delete(
       }
       await Promise.all([
         UserResultModel.deleteMany({ contentId }),
-        ShareModel.deleteMany({ contentId }),
         LikeModel.deleteMany({ contentId }),
         ResultModel.deleteMany({ contentId }),
         CommentModel.deleteMany({ contentId }),
