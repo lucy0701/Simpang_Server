@@ -68,36 +68,32 @@ router.post(
   },
 );
 
-router.get(
-  '/',
-  validatePagination,
-  async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Content']
-    try {
-      const { size, page, sort } = req.query;
-      const {
-        totalCount,
-        totalPage,
-        documents: contents,
-        pageNum,
-      } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
+router.get('/', validatePagination, async (req: Request, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Content']
+  try {
+    const { size, page, sort } = req.query as PaginationOptions;
+    const {
+      totalCount,
+      totalPage,
+      documents: contents,
+      pageNum,
+    } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
 
-      const filteredContent: Partial<IContent>[] = contents.map((content) => {
-        const { questions, results, updatedAt, ...filteredContent } = content.toObject();
-        return filteredContent;
-      });
+    const filteredContent: Partial<IContent>[] = contents.map((content) => {
+      const { questions, results, updatedAt, ...filteredContent } = content.toObject();
+      return filteredContent;
+    });
 
-      res.status(200).json({
-        totalCount,
-        totalPage,
-        currentPage: pageNum,
-        data: filteredContent,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+    res.status(200).json({
+      totalCount,
+      totalPage,
+      currentPage: pageNum,
+      data: filteredContent,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.get('/random', async (req: Request<{}, {}, {}, { size: string }>, res: Response, next: NextFunction) => {
   // #swagger.tags = ['Content']

@@ -105,35 +105,30 @@ router.get('/:resultId', async (req: Request<{ resultId: string }>, res: Respons
   }
 });
 
-router.get(
-  '/',
-  loginChecker,
-  validatePagination,
-  async (req: Request<{}, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Rusult']
-    try {
-      const user = req.user;
-      const { size, page, sort } = req.query;
+router.get('/', loginChecker, validatePagination, async (req: Request, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Rusult']
+  try {
+    const user = req.user;
+    const { size, page, sort } = req.query as PaginationOptions;
 
-      const {
-        totalCount,
-        totalPage,
-        documents: userResults,
-        pageNum,
-      } = await getPaginatedDocuments(UserResultModel, { userId: user!.sub }, sort || 'desc', page, size);
+    const {
+      totalCount,
+      totalPage,
+      documents: userResults,
+      pageNum,
+    } = await getPaginatedDocuments(UserResultModel, { userId: user!.sub }, sort || 'desc', page, size);
 
-      const data = await UserResultModel.populate(userResults, { path: 'results' });
+    const data = await UserResultModel.populate(userResults, { path: 'results' });
 
-      res.status(200).json({
-        totalCount,
-        totalPage,
-        currentPage: pageNum,
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+    res.status(200).json({
+      totalCount,
+      totalPage,
+      currentPage: pageNum,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;
