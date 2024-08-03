@@ -94,7 +94,7 @@ router.patch(
 );
 
 router.delete(
-  ':/noticeId',
+  '/:noticeId',
   loginChecker,
   roleChecker(['Admin']),
   async (req: Request, res: Response, next: NextFunction) => {
