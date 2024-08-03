@@ -12,34 +12,18 @@ import { getPaginatedDocuments } from '../utils';
 
 const router = express.Router();
 
-type Score = [number, number, number, number];
-
-const calculateResult = (score: Score) => {
-  const resultMapping = ['E', 'I', 'N', 'S', 'T', 'F', 'J', 'P'];
-  return [
-    score[0] > 0 ? resultMapping[0] : resultMapping[1],
-    score[1] > 0 ? resultMapping[2] : resultMapping[3],
-    score[2] > 0 ? resultMapping[4] : resultMapping[5],
-    score[3] > 0 ? resultMapping[6] : resultMapping[7],
-  ].join('');
-};
-
 router.post(
   '/:contentId',
   tokenChecker,
-  async (req: Request<{ contentId: string }, {}, { score: Score }>, res: Response, next: NextFunction) => {
+  async (req: Request<{ contentId: string }, {}, { result: string }>, res: Response, next: NextFunction) => {
     // #swagger.tags = ['Rusult']
     try {
       const { contentId } = req.params;
-      const { score } = req.body;
+      const { result } = req.body;
       const user = req.user;
 
-      if (!contentId || !score) {
+      if (!contentId || !result) {
         return res.status(400).json({ message: STATUS_MESSAGES.MISSING_FIELD });
-      }
-
-      if (score.length !== 4 || !score.every((num) => typeof num === 'number')) {
-        return res.status(400).json({ message: STATUS_MESSAGES.BAD_REQUEST });
       }
 
       const content = await ContentModel.findById<IContent>(contentId);
@@ -51,7 +35,6 @@ router.post(
       content.playCount = (content.playCount || 0) + 1;
       await content.save();
 
-      const result = calculateResult(score);
       const resultData = await ResultModel.findOne<IResult>({ contentId, result });
 
       if (!resultData) {
@@ -62,7 +45,7 @@ router.post(
         try {
           const findResult = await UserResultModel.find({ userId: user.sub }).countDocuments();
 
-          if (findResult >= 50) {
+          if (findResult >= 20) {
             const oldestResult = await UserResultModel.findOne({ userId: user.sub }).sort({ createdAt: 1 }).exec();
 
             if (oldestResult) {
@@ -81,7 +64,7 @@ router.post(
         }
       }
 
-      res.status(200).json(resultData);
+      res.status(200).json(resultData._id);
     } catch (error) {
       next(error);
     }
