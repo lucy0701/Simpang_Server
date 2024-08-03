@@ -7,4 +7,5 @@ export type PaginationOptions = {
   size: string;
   page: string;
   sort?: Sort;
+  filter?: object;
 };

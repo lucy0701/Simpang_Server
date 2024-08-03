@@ -44,35 +44,30 @@ router.post(
   },
 );
 
-router.get(
-  '/:contentId',
-  validatePagination,
-  tokenChecker,
-  async (req: Request<{ contentId: string }, {}, {}, PaginationOptions>, res: Response, next: NextFunction) => {
-    // #swagger.tags = ['Comment']
-    try {
-      const { contentId } = req.params;
-      const { size, page, sort } = req.query;
-      const {
-        totalCount,
-        totalPage,
-        documents: comments,
-        pageNum,
-      } = await getPaginatedDocuments(CommentModel, { contentId }, sort || 'desc', page, size);
+router.get('/:contentId', validatePagination, tokenChecker, async (req: Request, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['Comment']
+  try {
+    const { contentId } = req.params;
+    const { size, page, sort } = req.query as PaginationOptions;
+    const {
+      totalCount,
+      totalPage,
+      documents: comments,
+      pageNum,
+    } = await getPaginatedDocuments(CommentModel, { contentId }, sort || 'desc', page, size);
 
-      const data = await CommentModel.populate(comments, { path: 'user' });
+    const data = await CommentModel.populate(comments, { path: 'user' });
 
-      res.status(200).json({
-        totalCount,
-        totalPage,
-        currentPage: pageNum,
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+    res.status(200).json({
+      totalCount,
+      totalPage,
+      currentPage: pageNum,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.patch(
   '/:commentId',

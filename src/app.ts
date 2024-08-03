@@ -9,6 +9,7 @@ import comments from './routes/comments';
 import contents from './routes/contents';
 import kakao from './routes/kakao';
 import likes from './routes/likes';
+import notices from './routes/notices';
 import results from './routes/results';
 import uploade from './routes/uploade';
 import user from './routes/user';
@@ -39,6 +40,7 @@ app.use('/api/v1/results', results);
 app.use('/api/v1/comments', comments);
 app.use('/api/v1/likes', likes);
 app.use('/api/v1/user', user);
+app.use('/api/v1/notices', notices);
 
 app.use('/api/oauth2/kakao', kakao);
 app.use('/api/v1/upload', uploade);
