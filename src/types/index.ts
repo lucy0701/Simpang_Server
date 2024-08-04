@@ -1,6 +1,6 @@
 export * from './auth';
 
-export type ContentType = 'MBTI';
+export type ContentType = 'MBTI' | 'MBTI_mini';
 export type Sort = 'asc' | 'desc';
 
 export type PaginationOptions = {

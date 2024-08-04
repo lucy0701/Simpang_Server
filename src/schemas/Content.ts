@@ -49,7 +49,7 @@ const ContentSchema = new Schema<IContent>(
     playCount: { type: Number, required: true, default: 0 },
     commentCount: { type: Number, required: true, default: 0 },
     likeCount: { type: Number, required: true, default: 0 },
-    type: { type: String, required: true, enum: ['MBTI'] },
+    type: { type: String, required: true, enum: ['MBTI', 'MBTI_mini'] },
     creator: { type: String },
   },
   { timestamps: true },
