@@ -28,7 +28,13 @@ router.post(
 
       const userData = await UserModel.findById(user!.sub);
 
-      if (req.body.type === 'MBTI') {
+      if (req.body.type === 'MBTI_mini') {
+        if (questions.length < 5 || results.length !== 6) {
+          return res.status(400).json({
+            message: STATUS_MESSAGES.BAD_REQUEST,
+          });
+        }
+      } else if (req.body.type === 'MBTI') {
         if (questions.length < 4 || results.length !== 16) {
           return res.status(400).json({
             message: STATUS_MESSAGES.BAD_REQUEST,
