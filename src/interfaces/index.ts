@@ -13,6 +13,11 @@ export interface IBase extends Document {
   createdAt: Date;
 }
 
+export interface ILikeContents extends IBase {
+  title: string;
+  imageUrl: string;
+}
+
 export interface IUserResult extends IBase {
   contentTitle: string;
   results: mongoose.Types.ObjectId;
