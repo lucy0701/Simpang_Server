@@ -1,12 +1,38 @@
 import express, { NextFunction, Request, Response } from 'express';
 
 import { STATUS_MESSAGES } from '../constants';
+import { PaginationOptions } from '../types';
 
-import { loginChecker, tokenChecker } from '../middlewares';
+import { loginChecker, tokenChecker, validatePagination } from '../middlewares';
 import ContentModel from '../schemas/Content';
 import LikeModel from '../schemas/Like';
+import { getPaginatedDocuments } from '../utils';
 
 const router = express.Router();
+
+router.get('/', validatePagination, loginChecker, async (req: Request, res: Response, next: NextFunction) => {
+  // #swagger.tags = ['like']
+  try {
+    const user = req.user;
+    const { size, page, sort } = req.query as PaginationOptions;
+
+    const {
+      totalCount,
+      totalPage,
+      documents: likeContents,
+      pageNum,
+    } = await getPaginatedDocuments(LikeModel, { userId: user?.sub }, sort || 'desc', page, size);
+
+    res.status(200).json({
+      totalCount,
+      totalPage,
+      currentPage: pageNum,
+      data: likeContents,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.post(
   '/:contentId',
@@ -29,6 +55,8 @@ router.post(
       } else {
         try {
           await LikeModel.create({
+            title: content.title,
+            imageUrl: content.imageUrl,
             contentId,
             userId,
           });
