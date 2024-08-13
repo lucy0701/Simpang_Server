@@ -77,13 +77,13 @@ router.post(
 router.get('/', validatePagination, async (req: Request, res: Response, next: NextFunction) => {
   // #swagger.tags = ['Content']
   try {
-    const { size, page, sort } = req.query as PaginationOptions;
+    const { size, page, sort, filter } = req.query as PaginationOptions;
     const {
       totalCount,
       totalPage,
       documents: contents,
       pageNum,
-    } = await getPaginatedDocuments(ContentModel, {}, sort || 'desc', page, size);
+    } = await getPaginatedDocuments(ContentModel, filter ? filter : {}, sort || 'desc', page, size);
 
     const filteredContent: Partial<IContent>[] = contents.map((content) => {
       const { questions, results, updatedAt, ...filteredContent } = content.toObject();
