@@ -27,3 +27,7 @@ export interface IPayload extends JwtPayload {
   role: Role;
   accessToken: string;
 }
+
+export interface ITag extends Document {
+  name: string;
+}
