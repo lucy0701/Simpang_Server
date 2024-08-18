@@ -50,6 +50,7 @@ const ContentSchema = new Schema<IContent>(
     commentCount: { type: Number, required: true, default: 0 },
     likeCount: { type: Number, required: true, default: 0 },
     type: { type: String, required: true, enum: ['MBTI', 'MBTI_mini'] },
+    tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
     creator: { type: String },
   },
   { timestamps: true },
