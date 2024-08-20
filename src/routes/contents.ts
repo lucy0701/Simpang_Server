@@ -78,6 +78,7 @@ router.get('/', validatePagination, async (req: Request, res: Response, next: Ne
   // #swagger.tags = ['Content']
   try {
     const { size, page, sort, filter } = req.query as PaginationOptions;
+
     const {
       totalCount,
       totalPage,
@@ -155,16 +156,18 @@ router.patch(
         if (!creator) return res.status(403).json({ message: STATUS_MESSAGES.UNAUTHORIZED });
       }
 
-      await Promise.all(
-        results.map(async (updateData: IResult) => {
-          const updatedResult = await ResultModel.findOneAndUpdate({ result: updateData.result }, updateData, {
-            new: true,
-            upsert: true,
-            runValidators: true,
-          }).exec();
-          return updatedResult;
-        }),
-      );
+      if (results) {
+        await Promise.all(
+          results.map(async (updateData: IResult) => {
+            const updatedResult = await ResultModel.findOneAndUpdate({ result: updateData.result }, updateData, {
+              new: true,
+              upsert: true,
+              runValidators: true,
+            }).exec();
+            return updatedResult;
+          }),
+        );
+      }
 
       const updateContent = await ContentModel.findByIdAndUpdate<IContent>(contentId, contentData, {
         new: true,
