@@ -27,22 +27,17 @@ router.post(
   },
 );
 
-router.get(
-  '/',
-  loginChecker,
-  roleChecker(['Creator', 'Admin']),
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const filter = req.query.filter as string;
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const filter = req.query.filter as string;
 
-      const tags = await TagModel.find(filter ? { name: { $regex: new RegExp(filter, 'i') } } : {});
+    const tags = await TagModel.find(filter ? { name: { $regex: new RegExp(filter, 'i') } } : {});
 
-      res.json(tags);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+    res.json(tags);
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.patch(
   '/:tagId',
@@ -52,7 +47,6 @@ router.patch(
     try {
       const { tagId } = req.params;
       const { name } = req.body;
-      console.log('PSJ: name', name);
 
       const updateTag = await TagModel.findByIdAndUpdate(tagId, { name: name }, { new: true }).exec();
 
